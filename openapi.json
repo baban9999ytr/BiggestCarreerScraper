@@ -1,0 +1,1465 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Kariyer Automation API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/process-candidate-details": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Process Candidate Details",
+        "operationId": "process_candidate_details_process_candidate_details_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenOnly"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/candidate-details-status/{token}": {
+      "get": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Candidate Details Status",
+        "operationId": "candidate_details_status_candidate_details_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/index": {
+      "get": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Index",
+        "operationId": "index_index_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Login",
+        "operationId": "login_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginCredentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/session-status/{token}": {
+      "get": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Status",
+        "operationId": "status_session_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stream-status/{token}": {
+      "get": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Stream Status",
+        "operationId": "stream_status_stream_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submit-2fa-choice": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Choose",
+        "operationId": "choose_submit_2fa_choice_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoFactorChoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submit-2fa-code": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Code",
+        "operationId": "code_submit_2fa_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoFactorSubmission"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resend-2fa-code": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Resend 2Fa",
+        "operationId": "resend_2fa_resend_2fa_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenOnly"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/close-session": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Close Session",
+        "operationId": "close_session_close_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenOnly"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/process-jobs": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Process Jobs",
+        "operationId": "process_jobs_process_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/export-status/{token}": {
+      "get": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Export Status",
+        "operationId": "export_status_export_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/handle-jobs/{token}": {
+      "post": {
+        "summary": "Handle Jobs Endpoint",
+        "operationId": "handle_jobs_endpoint_handle_jobs__token__post",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HandleJobsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgeRangeFilter": {
+        "properties": {
+          "min_age": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 65.0,
+                "minimum": 16.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Age",
+            "description": "Minimum candidate age",
+            "default": 16
+          },
+          "max_age": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 65.0,
+                "minimum": 16.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Age",
+            "description": "Maximum candidate age",
+            "default": 65
+          }
+        },
+        "type": "object",
+        "title": "AgeRangeFilter"
+      },
+      "ApplicationFilters": {
+        "properties": {
+          "questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/CustomQuestionAnswer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questions"
+          },
+          "statuses": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Statuses",
+            "description": "Options: 'Durum Belirtilmemiş', 'Favori Aday', 'Mülakat', 'İş Teklifi', 'İşe Alındı', 'Ret'"
+          }
+        },
+        "type": "object",
+        "title": "ApplicationFilters"
+      },
+      "CandidateFilters": {
+        "properties": {
+          "include_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Active",
+            "description": "Aktif İlanlar",
+            "default": true
+          },
+          "include_passive": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Passive",
+            "description": "Pasif İlanlar",
+            "default": false
+          },
+          "include_drafts": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Drafts",
+            "description": "Taslak İlanlar",
+            "default": false
+          },
+          "include_archived": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Archived",
+            "description": "Arşivlenen İlanlar",
+            "default": false
+          },
+          "include_offerings": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Include Offerings",
+            "description": "Teklif İlanları",
+            "default": false
+          },
+          "personal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PersonalInfoFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "education": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EducationFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "experience": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperienceDetailsFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LocationFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "application": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ApplicationFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kvkk": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KvkkFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "review_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReviewStatusFilters"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "CandidateFilters"
+      },
+      "CustomQuestionAnswer": {
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question",
+            "description": "Question label text"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer",
+            "description": "Target response value"
+          }
+        },
+        "type": "object",
+        "title": "CustomQuestionAnswer"
+      },
+      "EducationFilters": {
+        "properties": {
+          "levels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Levels",
+            "description": "Eğitim Seviyesi"
+          },
+          "universities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Universities",
+            "description": "Üniversite"
+          },
+          "departments": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departments",
+            "description": "Bölüm"
+          }
+        },
+        "type": "object",
+        "title": "EducationFilters"
+      },
+      "ExperienceDetailsFilters": {
+        "properties": {
+          "experience_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "inexperienced",
+                  "experienced"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Experience Type",
+            "description": "0: Tümü, 1: Tecrübesiz, 2: Tecrübeli",
+            "default": "all"
+          },
+          "positions": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Positions",
+            "description": "Pozisyon listesi"
+          },
+          "position_scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "all_jobs",
+                  "last_job",
+                  "last_3_jobs"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position Scope",
+            "description": "0: Tüm İş Tecrübesi, 1: Son İş, 2: Son 3 İş",
+            "default": "all_jobs"
+          },
+          "position_levels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position Levels",
+            "description": "Pozisyon Seviyesi (e.g. 'Uzman', 'Stajyer', 'Mavi yaka')"
+          },
+          "sectors": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sectors",
+            "description": "Sektör listesi"
+          },
+          "sector_scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "all_jobs",
+                  "last_job",
+                  "last_3_jobs"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector Scope",
+            "description": "0: Tüm İş Tecrübesi, 1: Son İş, 2: Son 3 İş",
+            "default": "all_jobs"
+          },
+          "is_currently_working": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Currently Working",
+            "description": "True: Çalışan, False: Çalışmayan"
+          },
+          "is_retired": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Retired",
+            "description": "True: Emekli, False: Emekli Değil"
+          }
+        },
+        "type": "object",
+        "title": "ExperienceDetailsFilters"
+      },
+      "ExportRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token",
+            "description": "Authentication session token"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit",
+            "description": "Max jobs to process",
+            "default": 100
+          },
+          "max_candidates_per_job": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Candidates Per Job",
+            "description": "Max candidates to extract per job (Sınırsız için None)"
+          },
+          "filters": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CandidateFilters"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Filter criteria"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "ExportRequest"
+      },
+      "GenderFilter": {
+        "properties": {
+          "male": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Male",
+            "description": "Include male candidates",
+            "default": false
+          },
+          "female": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Female",
+            "description": "Include female candidates",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "GenderFilter"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HandleJobsRequest": {
+        "properties": {
+          "target_url": {
+            "type": "string",
+            "title": "Target Url",
+            "description": "Destination URL to receive the extracted job and applicant payload via POST request.",
+            "default": "https://httpbin.org/post"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "description": "Maximum number of job listings to process.",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "title": "HandleJobsRequest"
+      },
+      "KvkkFilters": {
+        "properties": {
+          "clarification_text_shown": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clarification Text Shown",
+            "description": "Aydınlatma Metni: True=Gösterilen, False=Gösterilmeyen"
+          },
+          "explicit_consent_approved": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explicit Consent Approved",
+            "description": "Açık Rıza Metni: True=Onaylayan, False=Onaylamayan"
+          }
+        },
+        "type": "object",
+        "title": "KvkkFilters"
+      },
+      "LanguageFilter": {
+        "properties": {
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language",
+            "description": "Language name (e.g. 'İngilizce')"
+          },
+          "min_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Level",
+            "description": "Options: 'Başlangıç', 'Temel', 'Orta', 'İyi', 'İleri', 'Anadil'"
+          }
+        },
+        "type": "object",
+        "title": "LanguageFilter"
+      },
+      "LocationFilters": {
+        "properties": {
+          "current_locations": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Locations",
+            "description": "Yaşadığı İl / İlçe"
+          },
+          "preferred_cities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Cities",
+            "description": "Çalışmak İstediği İl"
+          }
+        },
+        "type": "object",
+        "title": "LocationFilters"
+      },
+      "LoginCredentials": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 320,
+            "minLength": 3,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginCredentials"
+      },
+      "PersonalInfoFilters": {
+        "properties": {
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name",
+            "description": "Ad filter"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name",
+            "description": "Soyad filter"
+          },
+          "age_range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgeRangeFilter"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gender": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GenderFilter"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "nationality": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nationality",
+            "description": "Uyruk list"
+          },
+          "military_status": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Military Status",
+            "description": "Options: 'Farketmez', 'Yapıldı', 'Yapılmadı', 'Muaf', 'Tecilli'"
+          },
+          "driver_licences": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Licences",
+            "description": "Options: 'A1', 'B', 'C', 'E', 'Uluslararası Sürücü Belgesi'"
+          },
+          "languages": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/LanguageFilter"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Languages"
+          },
+          "is_disabled_candidate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Disabled Candidate",
+            "description": "Engelli Aday toggle",
+            "default": false
+          },
+          "is_disaster_affected": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Disaster Affected",
+            "description": "Afetten Etkilenen Aday toggle",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "PersonalInfoFilters"
+      },
+      "ReviewStatusFilters": {
+        "properties": {
+          "review_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "show_reviewed",
+                  "hide_reviewed"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Status",
+            "description": "Başvuru İnceleme Durumu",
+            "default": "all"
+          },
+          "response_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "unanswered_custom",
+                  "auto_replied",
+                  "answered_custom"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Status",
+            "description": "Cevaplama Durumu",
+            "default": "all"
+          }
+        },
+        "type": "object",
+        "title": "ReviewStatusFilters"
+      },
+      "TokenOnly": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "TokenOnly"
+      },
+      "TwoFactorChoice": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "method"
+        ],
+        "title": "TwoFactorChoice"
+      },
+      "TwoFactorSubmission": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 12,
+            "minLength": 3,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "code"
+        ],
+        "title": "TwoFactorSubmission"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
