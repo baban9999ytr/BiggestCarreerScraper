@@ -174,3 +174,9 @@ html_stuff\fourth_header_first_sidebar.html
 html_stuff\fourth_header_first_sidebar.html
 html_stuff\fifth_header_appplicants_example_details_with_consent.html
 html_stuff\fifth_Header_applicants_example_list.html
+
+.env
+extracted_jsons.json
+.logging_warning_count.json
+exports/
+__pycache__/

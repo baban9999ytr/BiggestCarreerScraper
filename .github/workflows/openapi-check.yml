@@ -1,0 +1,31 @@
+name: Check OpenAPI Spec Sync
+
+on:
+  pull_request:
+    paths:
+      - 'main.py'
+      - 'schemas.py'
+      - 'models.py'
+      - 'export_openapi.py'
+      - 'openapi.json'
+
+jobs:
+  check-spec:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Verify openapi.json is up to date
+        run: |
+          python export_openapi.py
+          git diff --exit-code openapi.json || (echo "openapi.json is out of date! Please run export_openapi.py locally and commit the changes." && exit 1)

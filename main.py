@@ -648,7 +648,7 @@ from fastapi import (
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, Field
-
+from supabaser import process_and_upload
 from schemas import ExportRequest
 from automation import handle_login_and_verification
 from automation_process_jobs import extract_and_send_jobs, process_jobs_task
@@ -1024,6 +1024,13 @@ async def process_jobs(p: ExportRequest, tasks: BackgroundTasks):
                 "count": len(jobs),
                 "exports": exports
             }
+
+            try:
+                await asyncio.to_thread(process_and_upload)
+                logger.info("Triggered supabaser process successfully for token %s", p.token)
+            except Exception as supa_err:
+                logger.error("Supabaser sync failed: %s", supa_err)
+
         except Exception as e:
             logger.exception("Background job processing failed for token %s: %s", p.token, e)
             s["last_export_result"] = {"status": "failed", "error": str(e)}
@@ -1036,8 +1043,16 @@ async def process_jobs(p: ExportRequest, tasks: BackgroundTasks):
         "status": "processing",
         "token": p.token,
         "message": f"Job processing started in background for limit={p.limit}, candidates_limit={p.max_candidates_per_job}."
-    } 
+    }
     
+
+@router.post("/trigger-supabaser")
+async def trigger_supabaser(tasks: BackgroundTasks):
+    tasks.add_task(asyncio.to_thread, process_and_upload)
+    return {
+        "status": "queued",
+        "message": "Supabaser background processing task queued."
+    }
     
     
 @router.get("/export-status/{token}")

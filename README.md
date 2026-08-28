@@ -38,7 +38,7 @@ Use this service only with accounts and data that you are authorized to access. 
 The current implementation should be treated as a development or internal-service baseline.
 
 - Sessions are stored in process memory and are lost when the service restarts.
-- There is no database, migration system, or persistent session store.
+- Supabase ingestion is optional and has no migration system; application sessions remain in memory.
 - No automated test suite is currently implemented; `tests/` contains only a placeholder.
 - CORS currently uses `allow_origins=["*"]` with credentials enabled. Restrict this before deployment.
 - Session tokens are bearer credentials. Do not expose them in logs, URLs, screenshots, browser storage, or client-side analytics.
@@ -57,7 +57,7 @@ The current implementation should be treated as a development or internal-servic
 | HTTP clients | `aiohttp`, `requests`, `curl_cffi` |
 | CAPTCHA/OCR | GeekedTest, OpenCV, NumPy, `ddddocr` |
 | Configuration | `python-dotenv`, environment variables |
-| Persistence | Local JSON/CSV files and in-memory sessions |
+| Persistence | Local JSON/CSV files, optional Supabase ingestion, and in-memory sessions |
 | Frontend | Static HTML and browser JavaScript in `index.html` |
 
 The root `requirements.txt` is the primary dependency manifest. `GeekedTest/requirements.txt` contains overlapping dependencies for the CAPTCHA helper package. `pyproject.toml` is currently empty.
@@ -106,9 +106,44 @@ NO_CAPTCHA_AI_KEY=
 # Optional browser executable override.
 # Normally not needed for a local Playwright Chromium installation.
 PLAYWRIGHT_CHROME=
+
+# Supabase ingestion
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=sb_publishable_replace-with-your-key
 ```
 
 `CAPSOLVER_API_KEY` appears in some setup notes, while the current Python source explicitly reads `NO_CAPTCHA_AI_KEY`. Configure only the provider enabled in your automation flow.
+
+## Database and ingestion setup
+
+The optional ingestion worker in `supabaser.py` scans `exports/` for JSON files named `kariyer_jobs_*.json` and `kariyer_candidate_details_*.json`. It keeps only fields in the strict `TARGET_KEYS` allowlist, enriches each record with `executed_by` (the local device hostname) and `is_logged`, and inserts the cleaned records into the custom `scraping.job_postings` PostgreSQL table.
+
+Configure `SUPABASE_URL` and the public Supabase publishable key (`sb_publishable_...`) in `.env`. The client selects the `scraping` schema and never requires a service-role key. RLS must be enabled on `scraping.job_postings` with an insert policy for `anon` and `authenticated` roles (`FOR INSERT TO anon, authenticated`), and without public `SELECT`, `UPDATE`, or `DELETE` policies. This makes the public key suitable for one-way record delivery: it can submit a JSON record, but cannot read, query, change, or erase records already stored.
+
+After a file is processed, its filename is recorded in `extracted_jsons.json`, preventing it from being uploaded again. When job exports finish, `main.py` can run `process_and_upload` in a background thread with `asyncio.to_thread`, so ingestion does not block API request handling.
+
+## Telemetry and opt-out configuration
+
+Supabase uploading and the associated telemetry are opt-in. Before running ingestion, create a local `logging_optout.txt` file containing exactly:
+
+```text
+LET_LOG=TRUE
+```
+
+The value is case-insensitive. If the file is missing, contains `LET_LOG=FALSE`, or contains any other value, the worker logs a warning and aborts all Supabase uploads and telemetry enrichment. To disable external transmission immediately, set the value to `FALSE` or delete the `LET_LOG` line:
+
+```text
+LET_LOG=FALSE
+```
+
+When logging is active, the first three runs print a prominent warning explaining that telemetry and Supabase logging are enabled and how to opt out. The run count is stored locally in `.logging_warning_count.json`.
+
+## Environment variables and files checklist
+
+- Required for Supabase ingestion in `.env`: `SUPABASE_URL` and `SUPABASE_KEY`.
+- Required opt-in file for upload: `logging_optout.txt` containing `LET_LOG=TRUE`.
+- Keep local tracking and sensitive data out of source control: `extracted_jsons.json`, `.logging_warning_count.json`, `exports/`, and `.env` should be listed in `.gitignore`.
+- Treat exports, screenshots, debug captures, credentials, and publishable-key configuration as local deployment data.
 
 ## Installation
 
@@ -642,6 +677,7 @@ Then poll the appropriate status endpoint until `is_processing` becomes `false`.
 
 ```text
 main.py                                  FastAPI app, routes, sessions, exports, CLI
+supabaser.py                              Opt-in JSON export ingestion into Supabase
 models.py                                Pydantic request models and session helpers
 config.py                                Environment configuration and shared state
 automation.py                            Kariyer login, CAPTCHA, and 2FA automation
