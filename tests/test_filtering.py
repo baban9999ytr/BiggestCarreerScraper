@@ -1,5 +1,3 @@
-import pytest
-
 from app.services.job_filter_service import (
     evaluate_candidate_filters,
     matches_age_criteria,

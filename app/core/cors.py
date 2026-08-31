@@ -10,7 +10,6 @@ Enforces explicit origin lists in production.
 from __future__ import annotations
 
 import logging
-import os
 
 logger = logging.getLogger("kariyer.cors")
 

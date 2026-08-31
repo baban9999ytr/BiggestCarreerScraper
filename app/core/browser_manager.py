@@ -1,12 +1,8 @@
-import asyncio
 import logging
-from contextlib import asynccontextmanager
-from datetime import datetime, timezone
-from typing import Any, AsyncGenerator, Dict, Optional
+from typing import Any, Dict, Optional
 
-from playwright.async_api import Browser, BrowserContext, Page, Playwright, async_playwright
+from playwright.async_api import Browser, BrowserContext, Page
 
-from app.core.config import settings
 from app.core.metadata_store import metadata_store
 from config import SESSIONS
 

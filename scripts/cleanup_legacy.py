@@ -5,7 +5,6 @@ scripts/cleanup_legacy.py
 Safely audits and removes obsolete legacy files and isolates experimental mockups.
 """
 
-import os
 import shutil
 import sys
 from pathlib import Path

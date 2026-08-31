@@ -1,31 +1,23 @@
 from __future__ import annotations
 
-import argparse
 import asyncio
-import base64
-import csv
-import json
 import logging
 import os
 import random
 import re
 import sys
-import uuid
-from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Any, Optional
 
 import aiohttp
 import cv2
 import numpy as np
-import uvicorn
-from dotenv import load_dotenv
-from fastapi import BackgroundTasks, FastAPI, HTTPException, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
 from playwright.async_api import Page, async_playwright
-from pydantic import BaseModel, Field
+
+from app.core.config import settings
+from app.core.proxy import get_playwright_proxy
+from automation_process_jobs import install_overlay_killer
+from config import ACTIVE_LOGIN_STATES, DEBUG_DIR, LOGIN_URL, SESSIONS, logger
 
 try:
     import ddddocr
@@ -34,22 +26,20 @@ try:
 except Exception:
     _ocr = None
 
-sys.path.append(r"C:\Users\KRR\Desktop\LastRodeo\GeekedTest")
+GEEKED_PATH = r"C:\Users\KRR\Desktop\LastRodeo\GeekedTest"
+if GEEKED_PATH not in sys.path:
+    sys.path.append(GEEKED_PATH)
+
 try:
     from geeked import Geeked
 except ImportError as e:
     Geeked = None
     logging.getLogger("main").warning("GeekedTest not found. Auto-captcha disabled: %s", e)
 
-from automation_process_jobs import extract_current_job, install_overlay_killer, process_jobs_task
-from config import ACTIVE_LOGIN_STATES, DEBUG_DIR, LOGIN_URL, SESSIONS, args, logger
-
 
 def aid(element_id: str) -> str:
     return f'[id="{element_id}"]'
 
-
-from app.core.config import settings
 
 _TR_MAP = str.maketrans(
     {
@@ -971,15 +961,11 @@ async def handle_login_and_verification(
 
         is_testerhtml = testerhtml or ("--testerhtml" in sys.argv)
 
-        is_headless = not is_testerhtml
-
         browser = await pw.chromium.launch(
             headless=False,
             # headless=is_headless,
             args=["--no-sandbox", "--disable-gpu"],
         )
-
-        from app.core.proxy import get_playwright_proxy
 
         _proxy_cfg = get_playwright_proxy()
         context = await browser.new_context(
@@ -1000,7 +986,7 @@ async def handle_login_and_verification(
         await page.wait_for_selector("#loginNameFormInput", timeout=30000)
 
         outcome = "login"
-        for attempt in range(1, 4):
+        for _attempt in range(1, 4):
             await submit_login_form(page, email, password)
             outcome = await wait_login_outcome(page, s, timeout=50)
             if outcome in ("2fa", "captcha", "authenticated", "error"):

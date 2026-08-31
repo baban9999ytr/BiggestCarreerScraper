@@ -10,13 +10,12 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 
 from app.api.dependencies import require_session
-from app.core.config import settings
 from app.core.url_validation import SSRFError, validate_target_url
 from app.models.schemas import ExportRequest, TokenOnly
 from app.services.supabase_service import process_and_upload
 from automation_extract_candidate_details import process_candidate_details_for_token
 from automation_process_jobs import extract_and_send_jobs, process_jobs_task
-from config import EXPORT_DIR, SESSIONS
+from config import EXPORT_DIR
 
 logger = logging.getLogger("kariyer_api.jobs")
 router = APIRouter()

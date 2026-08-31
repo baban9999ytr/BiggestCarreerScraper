@@ -4,7 +4,7 @@
 
     [project]
     name = "kariyer-ats-automation-api"
-    version = "2.0.7"
+    version = "2.0.8"
     description = "Hardened FastAPI & Playwright automation backend for authenticated Kariyer.net ATS accounts"
     readme = "README.md"
     license = { text = "MIT" }

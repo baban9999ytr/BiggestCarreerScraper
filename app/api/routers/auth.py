@@ -3,7 +3,7 @@ import json
 import logging
 import os
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, WebSocket
+from fastapi import APIRouter, BackgroundTasks, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import StreamingResponse
 
 from app.api.dependencies import require_session
@@ -38,7 +38,10 @@ async def capture_2fa_post_submission_screenshots(token: str, duration_seconds: 
                     await page.screenshot(path=filepath, type="jpeg", quality=60)
 
                 logger.info(
-                    "Captured post-2FA screenshot (%d/%ds): %s", step, duration_seconds, filename
+                    "Captured post-2FA screenshot (%d/%ds): %s",
+                    step,
+                    duration_seconds,
+                    filename,
                 )
             except Exception as e:
                 logger.debug("Failed to take post-2FA screenshot tick %d: %s", step, e)
@@ -77,15 +80,14 @@ async def status(token: str):
         try:
             url = page.url.lower()
             if "ats.kariyer.net" in url and "login" not in url:
-                if (
-                    await page.locator(
-                        "#user-info, #dashboard-job-list, .wide-card.job-card"
-                    ).count()
-                ) > 0:
+                card_count = await page.locator(
+                    "#user-info, #dashboard-job-list, .wide-card.job-card"
+                ).count()
+                if card_count > 0:
                     s["status"] = "success"
                     s["screen"] = "authenticated"
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("Non-critical status evaluation check failed: %s", e)
 
     return public(s)
 
@@ -123,10 +125,10 @@ async def stream_status(token: str):
 async def choose(p: TwoFactorChoice):
     s = await require_session(p.token)
     if s["status"] not in ACTIVE_LOGIN_STATES:
+        error_msg = f" Error: {s['error']}" if s.get("error") else ""
         raise HTTPException(
             400,
-            f"Session is in terminal state '{s['status']}' and cannot accept a 2FA choice."
-            + (f" Error: {s['error']}" if s.get("error") else ""),
+            f"Session is in terminal state '{s['status']}' and cannot accept a 2FA choice.{error_msg}",
         )
     if p.method not in ("email", "sms"):
         raise HTTPException(400, "Invalid 2FA method. Must be 'email' or 'sms'.")
@@ -152,10 +154,10 @@ async def choose(p: TwoFactorChoice):
 async def code(p: TwoFactorSubmission, tasks: BackgroundTasks):
     s = await require_session(p.token)
     if s["status"] not in ACTIVE_LOGIN_STATES:
+        error_msg = f" Error: {s['error']}" if s.get("error") else ""
         raise HTTPException(
             400,
-            f"Session is in terminal state '{s['status']}' and cannot accept a 2FA code."
-            + (f" Error: {s['error']}" if s.get("error") else ""),
+            f"Session is in terminal state '{s['status']}' and cannot accept a 2FA code.{error_msg}",
         )
     s["2fa_code"] = p.code
     s["error"] = None
@@ -200,8 +202,7 @@ async def close_session(p: TokenOnly):
 async def livestream(ws: WebSocket, token: str):
     s = await ws_require_session(ws, token)
     if s is None:
-        return  # already closed by ws_require_session
-
+        return
     await ws.accept()
 
     page = s.get("page")
@@ -211,8 +212,8 @@ async def livestream(ws: WebSocket, token: str):
             try:
                 if not page.is_closed():
                     break
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Page readiness poll failed: %s", e)
         await asyncio.sleep(0.1)
     else:
         await ws.close(code=4404)
@@ -234,9 +235,7 @@ async def livestream(ws: WebSocket, token: str):
                     async with s["lock"]:
                         if action == "click":
                             await page.mouse.click(x, y)
-                        elif action == "mousedown":
-                            await page.mouse.move(x, y)
-                        elif action == "mousemove":
+                        elif action in ("mousedown", "mousemove"):
                             await page.mouse.move(x, y)
                         elif action == "mouseup":
                             await page.mouse.up()
@@ -251,7 +250,7 @@ async def livestream(ws: WebSocket, token: str):
                     buf = await page.screenshot(type="jpeg", quality=40)
                 await ws.send_bytes(buf)
             except Exception:
-                pass
+                pass  # noqa: S110
 
             await asyncio.sleep(1)
     except WebSocketDisconnect:
@@ -262,4 +261,4 @@ async def livestream(ws: WebSocket, token: str):
         try:
             await ws.close()
         except Exception:
-            pass
+            pass  # noqa: S110

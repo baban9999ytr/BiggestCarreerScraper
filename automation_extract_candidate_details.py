@@ -8,7 +8,7 @@ import re
 import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional, Tuple
+from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional
 
 from playwright.async_api import Page, async_playwright
 

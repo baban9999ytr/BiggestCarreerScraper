@@ -5,7 +5,6 @@ import re
 import subprocess
 import sys
 from logging import Formatter, LogRecord
-from typing import Any
 
 import requests
 from packaging.version import parse as parse_version

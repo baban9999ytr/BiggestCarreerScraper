@@ -6,7 +6,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, List, Literal, Optional
 
-from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("kariyer_api.config")

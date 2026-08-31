@@ -19,7 +19,7 @@ from app.core.logger import setup_logging
 from app.core.metadata_store import metadata_store
 from app.models.session import new_session, public
 from automation import handle_login_and_verification
-from config import DEBUG_DIR, SESSIONS, args
+from config import SESSIONS, args
 
 setup_logging()
 logger = logging.getLogger("main")
@@ -111,4 +111,4 @@ if __name__ == "__main__":
     if args.autosolvetester:
         asyncio.run(tester())
     else:
-        uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)
+        uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)# noqa: S104

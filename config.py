@@ -4,6 +4,7 @@ import argparse
 import logging
 from pathlib import Path
 from typing import Any
+from app.core.config import settings
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,7 +21,6 @@ parser.add_argument(
 )
 args, _ = parser.parse_known_args()
 
-from app.core.config import settings
 
 ROOT = Path(__file__).resolve().parent
 EXPORT_DIR = str(settings.export_dir)

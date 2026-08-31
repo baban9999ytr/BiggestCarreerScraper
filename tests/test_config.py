@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.core.config import AppSettings, CaptchaProvider
+from app.core.config import AppSettings
 
 
 def test_default_config_loading():
