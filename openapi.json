@@ -5,6 +5,281 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Login",
+        "operationId": "login_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginCredentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/session-status/{token}": {
+      "get": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Status",
+        "operationId": "status_session_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stream-status/{token}": {
+      "get": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Stream Status",
+        "operationId": "stream_status_stream_status__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submit-2fa-choice": {
+      "post": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Choose",
+        "operationId": "choose_submit_2fa_choice_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoFactorChoice"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submit-2fa-code": {
+      "post": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Code",
+        "operationId": "code_submit_2fa_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TwoFactorSubmission"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resend-2fa-code": {
+      "post": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Resend 2Fa",
+        "operationId": "resend_2fa_resend_2fa_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenOnly"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/close-session": {
+      "post": {
+        "tags": [
+          "Authentication & WebSocket"
+        ],
+        "summary": "Close Session",
+        "operationId": "close_session_close_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenOnly"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/process-candidate-details": {
       "post": {
         "tags": [
@@ -84,295 +359,6 @@
         }
       }
     },
-    "/index": {
-      "get": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Index",
-        "operationId": "index_index_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response"
-          }
-        }
-      }
-    },
-    "/login": {
-      "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Login",
-        "operationId": "login_login_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginCredentials"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/session-status/{token}": {
-      "get": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Status",
-        "operationId": "status_session_status__token__get",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Token"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/stream-status/{token}": {
-      "get": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Stream Status",
-        "operationId": "stream_status_stream_status__token__get",
-        "parameters": [
-          {
-            "name": "token",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Token"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/submit-2fa-choice": {
-      "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Choose",
-        "operationId": "choose_submit_2fa_choice_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TwoFactorChoice"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/submit-2fa-code": {
-      "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Code",
-        "operationId": "code_submit_2fa_code_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TwoFactorSubmission"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/resend-2fa-code": {
-      "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Resend 2Fa",
-        "operationId": "resend_2fa_resend_2fa_code_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TokenOnly"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/close-session": {
-      "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
-        "summary": "Close Session",
-        "operationId": "close_session_close_session_post",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TokenOnly"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/process-jobs": {
       "post": {
         "tags": [
@@ -406,6 +392,25 @@
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trigger-supabaser": {
+      "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
+        "summary": "Trigger Supabaser",
+        "operationId": "trigger_supabaser_trigger_supabaser_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
@@ -452,40 +457,11 @@
         }
       }
     },
-    "/": {
-      "get": {
-        "summary": "Root",
-        "operationId": "root__get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/health": {
-      "get": {
-        "summary": "Health Check",
-        "operationId": "health_check_health_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
     "/handle-jobs/{token}": {
       "post": {
+        "tags": [
+          "Enterprise Automation API"
+        ],
         "summary": "Handle Jobs Endpoint",
         "operationId": "handle_jobs_endpoint_handle_jobs__token__post",
         "parameters": [
@@ -509,6 +485,108 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "System & Infrastructure"
+        ],
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "System & Infrastructure"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/index": {
+      "get": {
+        "tags": [
+          "System & Infrastructure"
+        ],
+        "summary": "Index",
+        "operationId": "index_index_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/download-export/{token}/{filename}": {
+      "get": {
+        "tags": [
+          "System & Infrastructure"
+        ],
+        "summary": "Download Export",
+        "description": "Serve a generated export file for an authenticated session.\n\nSecurity:\n- Token must map to a known session (any non-expired state).\n- Filename is validated against a strict allowlist before any filesystem access.\n- Path-traversal is prevented by both the regex and Path.resolve() confinement.\n- Only .json and .csv files inside the exports directory are served.",
+        "operationId": "download_export_download_export__token___filename__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1059,18 +1137,24 @@
         "properties": {
           "target_url": {
             "type": "string",
+            "maxLength": 2048,
+            "minLength": 10,
             "title": "Target Url",
-            "description": "Destination URL to receive the extracted job and applicant payload via POST request.",
-            "default": "https://httpbin.org/post"
+            "description": "Destination HTTPS URL to receive the extracted job payload via POST."
           },
           "limit": {
             "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
             "title": "Limit",
             "description": "Maximum number of job listings to process.",
             "default": 10
           }
         },
         "type": "object",
+        "required": [
+          "target_url"
+        ],
         "title": "HandleJobsRequest"
       },
       "KvkkFilters": {

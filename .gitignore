@@ -177,6 +177,13 @@ html_stuff\fifth_Header_applicants_example_list.html
 
 .env
 extracted_jsons.json
+extracted_cvs.json
 .logging_warning_count.json
 exports/
+screenshots/
+debug/
+*.sqlite
+*.sqlite-journal
 __pycache__/
+kariyer_ats/
+sessions/

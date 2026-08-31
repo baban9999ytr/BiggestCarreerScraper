@@ -49,7 +49,7 @@ def aid(element_id: str) -> str:
     return f'[id="{element_id}"]'
 
 
-load_dotenv()
+from app.core.config import settings
 _TR_MAP = str.maketrans({
     "I": "i", "İ": "i", "ı": "i",
     "Ş": "s", "ş": "s",
@@ -58,7 +58,7 @@ _TR_MAP = str.maketrans({
     "Ö": "o", "ö": "o",
     "Ç": "c", "ç": "c",
 })
-NO_CAPTCHA_AI_KEY = os.getenv("NO_CAPTCHA_AI_KEY")
+NO_CAPTCHA_AI_KEY = settings.captcha_api_key
 
 _SEND_CODE_LABELS = [
     "Doğrulama kodunu gönder",
@@ -927,17 +927,23 @@ async def handle_login_and_verification(
 
         is_testerhtml = testerhtml or ("--testerhtml" in sys.argv)
 
-        is_headless = True
-        if "--vnc" in sys.argv or is_testerhtml:
-            is_headless = False
+        is_headless = not is_testerhtml
 
         browser = await pw.chromium.launch(
-            headless=is_headless, 
+            headless=False, 
+            # headless=is_headless, 
             args=["--no-sandbox", "--disable-gpu"]
         )
 
-        context = await browser.new_context(viewport={"width": 1280, "height": 1024}, locale="tr-TR") 
+        from app.core.proxy import get_playwright_proxy
+        _proxy_cfg = get_playwright_proxy()
+        context = await browser.new_context(
+            viewport={"width": 1280, "height": 1024},
+            locale="tr-TR",
+            **( {"proxy": _proxy_cfg} if _proxy_cfg else {} ),
+        )
         await install_overlay_killer(context)
+
         page = await context.new_page()
         page.set_default_timeout(15000)
         s.update(playwright=pw, browser=browser, context=context, page=page)
@@ -1002,6 +1008,8 @@ async def handle_login_and_verification(
                     await pw.stop()
                 except Exception:
                     pass
+
+
 def calculate_slider_offset_local(bg_bytes: bytes, slice_bytes: bytes) -> float:
     if _ocr:
         try:

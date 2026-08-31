@@ -18,7 +18,8 @@ logger = logging.getLogger("extract_candidate_details")
 BASE_URL = "https://ats.kariyer.net"
 CACHE_FILENAME = "extracted_cvs.json"
 CACHE_TTL_DAYS = 180
-CV_SCRAPE_DELAY_SECONDS = int(os.environ.get("CV_SCRAPE_DELAY_SECONDS", "30"))
+from app.core.config import settings
+CV_SCRAPE_DELAY_SECONDS = settings.cv_scrape_delay_seconds
 CACHE_VERSION = 1
 
 # /ozgecmis-detay/{jobId}/{candidateId}/{applicationId}

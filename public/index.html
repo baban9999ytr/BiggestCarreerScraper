@@ -472,6 +472,30 @@
                         statusMsg.innerText = "✓ İşlem Başarıyla Tamamlandı";
                         statusMsg.style.color = "#4ade80";
                         jsonOutput.innerText = JSON.stringify(data.result, null, 2);
+
+                        // Render download links if exports are available
+                        const exports = data.result.exports;
+                        if (exports) {
+                            const linksDiv = document.createElement("div");
+                            linksDiv.style.cssText = "margin-top:0.75rem; display:flex; gap:8px; flex-wrap:wrap;";
+                            if (exports.json) {
+                                const a = document.createElement("a");
+                                a.href = exports.json;
+                                a.download = "";
+                                a.innerText = "⬇ JSON İndir";
+                                a.style.cssText = "flex:1; text-align:center; padding:0.5rem; background:#1e3a5f; color:#60a5fa; border:1px solid #2563eb; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none;";
+                                linksDiv.appendChild(a);
+                            }
+                            if (exports.csv) {
+                                const b = document.createElement("a");
+                                b.href = exports.csv;
+                                b.download = "";
+                                b.innerText = "⬇ CSV İndir";
+                                b.style.cssText = "flex:1; text-align:center; padding:0.5rem; background:#1a3a2a; color:#4ade80; border:1px solid #22c55e; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none;";
+                                linksDiv.appendChild(b);
+                            }
+                            jsonOutput.parentNode.insertBefore(linksDiv, jsonOutput.nextSibling);
+                        }
                     } else if (data.result && data.result.status === "failed") {
                         statusMsg.innerText = "❌ İşlem Başarısız Oldu";
                         statusMsg.style.color = "#f87171";
