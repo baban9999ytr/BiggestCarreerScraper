@@ -6,6 +6,7 @@ CORS origin loader with environment-driven configuration.
 Never allows wildcard origins when credentials are enabled.
 Enforces explicit origin lists in production.
 """
+
 from __future__ import annotations
 
 import logging
@@ -23,6 +24,7 @@ _SAFE_LOCALHOST_ORIGINS: list[str] = [
 
 
 from app.core.config import settings
+
 
 def get_allowed_origins() -> list[str]:
     origins = settings.cors_origins_list

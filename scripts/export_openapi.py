@@ -4,6 +4,7 @@ scripts/export_openapi.py
 ─────────────────────────
 CLI script to dump the OpenAPI JSON schema to a file.
 """
+
 import sys
 from pathlib import Path
 

@@ -47,7 +47,9 @@ def new_session(email: str) -> tuple[str, dict[str, Any]]:
         "playwright": None,
         "jobs_exported": 0,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "expires_at": (datetime.now(timezone.utc) + timedelta(seconds=settings.session_ttl_seconds)).isoformat(),
+        "expires_at": (
+            datetime.now(timezone.utc) + timedelta(seconds=settings.session_ttl_seconds)
+        ).isoformat(),
         "lock": asyncio.Lock(),
     }
     SESSIONS[token] = s

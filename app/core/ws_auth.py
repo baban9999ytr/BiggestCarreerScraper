@@ -7,6 +7,7 @@ Validates session tokens BEFORE upgrading the WebSocket connection.
 An invalid or expired token causes an immediate close at the HTTP
 upgrade stage — the connection is never accepted.
 """
+
 from __future__ import annotations
 
 import logging
@@ -14,8 +15,8 @@ from datetime import datetime, timezone
 
 from fastapi import WebSocket
 
-from config import ACTIVE_LOGIN_STATES, SESSIONS
 from app.core.metadata_store import metadata_store
+from config import ACTIVE_LOGIN_STATES, SESSIONS
 
 logger = logging.getLogger("kariyer.ws_auth")
 

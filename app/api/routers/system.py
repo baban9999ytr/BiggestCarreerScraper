@@ -1,11 +1,13 @@
 import os
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
-from config import SESSIONS, EXPORT_DIR
 from app.core.export_security import ExportSecurityError, safe_export_path
+from config import EXPORT_DIR, SESSIONS
 
 router = APIRouter()
+
 
 @router.get("/")
 async def root():
@@ -22,6 +24,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 PUBLIC_INDEX = ROOT_DIR / "public" / "index.html"
 FALLBACK_INDEX = ROOT_DIR / "index.html"
+
 
 @router.get("/index", response_class=FileResponse)
 async def index():
@@ -51,11 +54,7 @@ async def download_export(token: str, filename: str):
     except ExportSecurityError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    media_type = (
-        "application/json"
-        if filename.endswith(".json")
-        else "text/csv; charset=utf-8-sig"
-    )
+    media_type = "application/json" if filename.endswith(".json") else "text/csv; charset=utf-8-sig"
     return FileResponse(
         path=str(file_path),
         media_type=media_type,

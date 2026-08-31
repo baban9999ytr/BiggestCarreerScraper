@@ -9,6 +9,7 @@ link-local addresses, cloud metadata endpoints, and embedded credentials.
 DNS is resolved at validation time so that hostnames that map to private
 IPs are also caught (basic DNS-rebinding mitigation at the application layer).
 """
+
 from __future__ import annotations
 
 import ipaddress
@@ -25,47 +26,41 @@ _ALLOWED_SCHEMES = frozenset({"http", "https"})
 _BLOCKED_HOSTNAMES: frozenset[str] = frozenset(
     {
         "localhost",
-        "metadata.google.internal",  
-        "169.254.169.254",          
-        "fd00::ec2",                
-        "instance-data",            
-        "computeMetadata",         
+        "metadata.google.internal",
+        "169.254.169.254",
+        "fd00::ec2",
+        "instance-data",
+        "computeMetadata",
     }
 )
 
 _BLOCKED_NETWORKS: list[ipaddress.IPv4Network | ipaddress.IPv6Network] = [
-    ipaddress.ip_network("127.0.0.0/8"),      
-    ipaddress.ip_network("10.0.0.0/8"),      
-    ipaddress.ip_network("172.16.0.0/12"),   
-    ipaddress.ip_network("192.168.0.0/16"),  
-    ipaddress.ip_network("169.254.0.0/16"),   
-    ipaddress.ip_network("100.64.0.0/10"),    
-    ipaddress.ip_network("0.0.0.0/8"),        
-    ipaddress.ip_network("240.0.0.0/4"),      
-    ipaddress.ip_network("::1/128"),          
-    ipaddress.ip_network("fc00::/7"),         
-    ipaddress.ip_network("fe80::/10"),        
-    ipaddress.ip_network("::ffff:0:0/96"),    
+    ipaddress.ip_network("127.0.0.0/8"),
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("169.254.0.0/16"),
+    ipaddress.ip_network("100.64.0.0/10"),
+    ipaddress.ip_network("0.0.0.0/8"),
+    ipaddress.ip_network("240.0.0.0/4"),
+    ipaddress.ip_network("::1/128"),
+    ipaddress.ip_network("fc00::/7"),
+    ipaddress.ip_network("fe80::/10"),
+    ipaddress.ip_network("::ffff:0:0/96"),
 ]
-
-
 
 
 class SSRFError(ValueError):
     """Raised when a URL fails webhook-safety validation."""
 
 
-
-
 def _is_ip_blocked(ip_str: str) -> bool:
     try:
         addr = ipaddress.ip_address(ip_str)
     except ValueError:
-        return True  
+        return True
 
     return any(addr in net for net in _BLOCKED_NETWORKS)
-
-
 
 
 def validate_target_url(url: str, *, resolve_dns: bool = True) -> str:
@@ -107,11 +102,10 @@ def validate_target_url(url: str, *, resolve_dns: bool = True) -> str:
 
     if parsed.scheme not in _ALLOWED_SCHEMES:
         raise SSRFError(
-            f"URL scheme '{parsed.scheme}' is not permitted. "
-            "Only 'http' and 'https' are allowed."
+            f"URL scheme '{parsed.scheme}' is not permitted. Only 'http' and 'https' are allowed."
         )
 
-    hostname = parsed.hostname 
+    hostname = parsed.hostname
     if not hostname:
         raise SSRFError("target_url must include a valid hostname.")
 
@@ -123,26 +117,22 @@ def validate_target_url(url: str, *, resolve_dns: bool = True) -> str:
             "The supplied target URL hostname is not permitted as a webhook destination."
         )
 
-  
     try:
-        ipaddress.ip_address(hostname)  
+        ipaddress.ip_address(hostname)
     except ValueError:
-        pass  
+        pass
     else:
         if _is_ip_blocked(hostname):
             raise SSRFError(
-                "target_url points to a private or reserved IP address, "
-                "which is not permitted."
+                "target_url points to a private or reserved IP address, which is not permitted."
             )
-        return url  
+        return url
 
     if resolve_dns:
         try:
             results = socket.getaddrinfo(hostname, None)
         except OSError as exc:
-            raise SSRFError(
-                f"Could not resolve hostname '{hostname}': {exc}"
-            ) from exc
+            raise SSRFError(f"Could not resolve hostname '{hostname}': {exc}") from exc
 
         for result in results:
             ip = result[4][0]

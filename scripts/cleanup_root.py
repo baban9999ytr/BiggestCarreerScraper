@@ -4,8 +4,9 @@ scripts/cleanup_root.py
 ───────────────────────
 Finalizes Phase 4 repository hygiene by moving static assets and purging stale files.
 """
-from pathlib import Path
+
 import shutil
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 

@@ -11,15 +11,15 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
+from app.api.routers.api_router import api_router
 from app.core.browser_manager import browser_manager
+from app.core.config import settings
+from app.core.cors import get_allowed_origins
 from app.core.logger import setup_logging
 from app.core.metadata_store import metadata_store
-from app.core.cors import get_allowed_origins
-from app.api.routers.api_router import api_router
-from config import SESSIONS, args, DEBUG_DIR
 from app.models.session import new_session, public
 from automation import handle_login_and_verification
+from config import DEBUG_DIR, SESSIONS, args
 
 setup_logging()
 logger = logging.getLogger("main")
@@ -28,33 +28,36 @@ GEEKED_PATH = os.path.join(os.path.expanduser("~"), "Desktop", "LastRodeo", "Gee
 if os.path.exists(GEEKED_PATH):
     sys.path.append(GEEKED_PATH)
 
+
 @asynccontextmanager
 async def lifespan(app_instance: FastAPI):
     await metadata_store.init_db()
     SESSIONS.update(await metadata_store.get_all_sessions())
-    
+
     try:
         from app.core.openapi import export_openapi_schema
+
         export_openapi_schema("openapi.json")
     except Exception as e:
         logger.warning("OpenAPI schema export skipped or failed: %s", e)
-    
+
     yield
-    
+
     logger.info("Shutting down... cleaning up browser sessions.")
     await browser_manager.terminate_all()
+
 
 app = FastAPI(
     title="Kariyer Automation API",
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
-    openapi_url="/openapi.json"
+    openapi_url="/openapi.json",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=get_allowed_origins(),          
+    allow_origins=get_allowed_origins(),
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-Request-ID"],
@@ -85,7 +88,15 @@ async def tester():
                     logger.debug("Screenshot worker tick failed: %s", e)
             await asyncio.sleep(5)
 
-    login_task = asyncio.create_task(handle_login_and_verification(t, settings.kariyer_email, settings.kariyer_password, False, getattr(args, "testerhtml", False)))
+    login_task = asyncio.create_task(
+        handle_login_and_verification(
+            t,
+            settings.kariyer_email,
+            settings.kariyer_password,
+            False,
+            getattr(args, "testerhtml", False),
+        )
+    )
     while not s.get("page"):
         await asyncio.sleep(0.2)
 

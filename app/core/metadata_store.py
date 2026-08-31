@@ -1,13 +1,15 @@
-import aiosqlite
 import json
 import logging
-from typing import Any, Dict, Optional
 from datetime import datetime, timezone
+from typing import Any, Dict, Optional
+
+import aiosqlite
 
 from app.core.config import settings
 
 logger = logging.getLogger("kariyer_api.metadata_store")
 DB_PATH = settings.export_dir.parent / "metadata.sqlite"
+
 
 class MetadataStore:
     def __init__(self, db_path: str = str(DB_PATH)):
@@ -46,10 +48,9 @@ class MetadataStore:
         status = session_data.get("status", "initiating")
         created_at = session_data.get("created_at") or datetime.now(timezone.utc).isoformat()
         expires_at = session_data.get("expires_at") or datetime.now(timezone.utc).isoformat()
-        
+
         meta = {
-            k: v for k, v in session_data.items()
-            if k not in ("page", "lock", "browser", "context")
+            k: v for k, v in session_data.items() if k not in ("page", "lock", "browser", "context")
         }
 
         async with aiosqlite.connect(self.db_path) as db:
@@ -62,7 +63,7 @@ class MetadataStore:
                     expires_at=excluded.expires_at,
                     metadata=excluded.metadata
                 """,
-                (token, email, status, created_at, expires_at, json.dumps(meta))
+                (token, email, status, created_at, expires_at, json.dumps(meta)),
             )
             await db.commit()
 
@@ -71,7 +72,9 @@ class MetadataStore:
         Loads the session metadata from SQLite.
         """
         async with aiosqlite.connect(self.db_path) as db:
-            async with db.execute("SELECT metadata FROM sessions WHERE token = ?", (token,)) as cursor:
+            async with db.execute(
+                "SELECT metadata FROM sessions WHERE token = ?", (token,)
+            ) as cursor:
                 row = await cursor.fetchone()
                 if row:
                     return json.loads(row[0])
@@ -89,5 +92,6 @@ class MetadataStore:
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute("DELETE FROM sessions WHERE token = ?", (token,))
             await db.commit()
+
 
 metadata_store = MetadataStore()

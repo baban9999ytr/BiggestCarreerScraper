@@ -19,6 +19,7 @@ TABLE_NAME = "job_postings"
 
 try:
     from supabase import Client, ClientOptions, create_client
+
     if settings.supabase_url and settings.supabase_key:
         supabase: Client | None = create_client(
             settings.supabase_url,
@@ -32,17 +33,51 @@ except Exception as exc:
     logger.warning("Supabase initialization skipped or failed: %s", exc)
 
 TARGET_KEYS = {
-    "title", "href", "reference_number", "category_tab", "pozisyon",
-    "ilan_basligi", "departman", "lokasyon", "calisma_sekli", "calisma_tercihi",
-    "engelli_ilani", "pozisyon_seviyesi", "min_deneyim", "max_deneyim",
-    "candidate_location", "egitim_seviyesi", "uni_ekleme_istegi", "bolumler",
-    "yabanci_dil", "dil_seviyesi", "askerlik_bilgisi", "surucu_belgesi",
-    "yetenekler", "calistigi_pozisyonlar", "calistigi_sektorler", "adaylerden_gizle",
-    "maas_turu", "odeme_sikligi", "min_maas", "max_maas", "para_birimi",
-    "ilan_aciklamasi", "ilan_aciklamasi_html", "ilan_gorsel_url", "secili_sorular",
-    "acik_riza_onayi", "otomatik_mesaj", "referans_no", "scraped_at", "company",
-    "sirket_sayfasi", "applications_count", "job_ref_no", "job_title",
-    "source_url"
+    "title",
+    "href",
+    "reference_number",
+    "category_tab",
+    "pozisyon",
+    "ilan_basligi",
+    "departman",
+    "lokasyon",
+    "calisma_sekli",
+    "calisma_tercihi",
+    "engelli_ilani",
+    "pozisyon_seviyesi",
+    "min_deneyim",
+    "max_deneyim",
+    "candidate_location",
+    "egitim_seviyesi",
+    "uni_ekleme_istegi",
+    "bolumler",
+    "yabanci_dil",
+    "dil_seviyesi",
+    "askerlik_bilgisi",
+    "surucu_belgesi",
+    "yetenekler",
+    "calistigi_pozisyonlar",
+    "calistigi_sektorler",
+    "adaylerden_gizle",
+    "maas_turu",
+    "odeme_sikligi",
+    "min_maas",
+    "max_maas",
+    "para_birimi",
+    "ilan_aciklamasi",
+    "ilan_aciklamasi_html",
+    "ilan_gorsel_url",
+    "secili_sorular",
+    "acik_riza_onayi",
+    "otomatik_mesaj",
+    "referans_no",
+    "scraped_at",
+    "company",
+    "sirket_sayfasi",
+    "applications_count",
+    "job_ref_no",
+    "job_title",
+    "source_url",
 }
 
 
@@ -81,7 +116,9 @@ def process_and_upload() -> None:
         return
 
     if not is_logging_enabled():
-        logger.info("Logging is not explicitly enabled in opt-out configuration. Skipping Supabase upload.")
+        logger.info(
+            "Logging is not explicitly enabled in opt-out configuration. Skipping Supabase upload."
+        )
         return
 
     machine_name = socket.gethostname()

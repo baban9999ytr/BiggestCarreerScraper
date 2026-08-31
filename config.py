@@ -12,7 +12,12 @@ logging.basicConfig(
 logger = logging.getLogger("kariyer_api")
 
 parser = argparse.ArgumentParser(description="Kariyer.net Enterprise API / Playwright Automation")
-parser.add_argument("--autosolvetester", "--test", action="store_true", help="Validate login flow and take periodic screenshots.")
+parser.add_argument(
+    "--autosolvetester",
+    "--test",
+    action="store_true",
+    help="Validate login flow and take periodic screenshots.",
+)
 args, _ = parser.parse_known_args()
 
 from app.core.config import settings
@@ -30,7 +35,10 @@ EMPLOYER_LOGIN_URL = "https://www.kariyer.net/isveren/giris"
 
 SESSION_TTL_SECONDS = settings.session_ttl_seconds
 
-CHROME_PATH = settings.chrome_path or "/opt/pw-browsers/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell"
+CHROME_PATH = (
+    settings.chrome_path
+    or "/opt/pw-browsers/chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell"
+)
 
 SESSIONS: dict[str, dict[str, Any]] = {}
 

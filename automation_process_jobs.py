@@ -751,7 +751,9 @@ async def hydrate_wizard_steps(page: Page) -> None:
     except Exception:
         pass
     try:
-        links = page.locator("#toc-stepper-ul a:not(.disabled-stepper), .vertical-stepper a:not(.disabled-stepper)")
+        links = page.locator(
+            "#toc-stepper-ul a:not(.disabled-stepper), .vertical-stepper a:not(.disabled-stepper)"
+        )
         count = await links.count()
         for i in range(count):
             try:
@@ -853,10 +855,9 @@ async def extract_job_card_metadata(card_locator: Locator) -> Dict[str, Any]:
         ref_no = await ref_el.text_content() if await ref_el.count() else ""
         company_el = card_locator.locator(".job-card_profile-name").first
         company = await company_el.text_content() if await company_el.count() else ""
-        apps_el = (
-            card_locator.locator(".count-item:has(.count-label:has-text('Başvuru')) a span")
-            .first
-        )
+        apps_el = card_locator.locator(
+            ".count-item:has(.count-label:has-text('Başvuru')) a span"
+        ).first
         if await apps_el.count() == 0:
             apps_el = (
                 card_locator.locator(".count-item .count-label:has-text('Başvuru')")
@@ -980,7 +981,9 @@ async def _extract_candidates_from(
                 break
 
     if not loaded:
-        logger.warning("Target page candidate containers did not signal readiness; executing fallbacks directly.")
+        logger.warning(
+            "Target page candidate containers did not signal readiness; executing fallbacks directly."
+        )
 
     await dismiss_overlays(target)
     await clear_blocking_popups(target)
@@ -1023,7 +1026,9 @@ async def _extract_candidates_from(
 
         if max_candidates is not None and len(all_candidates) >= max_candidates:
             all_candidates = all_candidates[:max_candidates]
-            logger.info("Reached candidate limit (%d candidates). Stopping pagination.", max_candidates)
+            logger.info(
+                "Reached candidate limit (%d candidates). Stopping pagination.", max_candidates
+            )
             break
 
         if empty_pages >= 2:
@@ -1038,7 +1043,9 @@ async def _extract_candidates_from(
 
         class_attr = await next_btn.get_attribute("class") or ""
         if "disabled" in class_attr:
-            logger.info("Reached final candidate page (%d candidates extracted).", len(all_candidates))
+            logger.info(
+                "Reached final candidate page (%d candidates extracted).", len(all_candidates)
+            )
             break
 
         next_link = next_btn.locator("a.page-link, a").first
@@ -1134,7 +1141,9 @@ async def _extract_candidates_for_job(
             ".resume-card, a[href*='/ozgecmis-detay/'], .resume-card_wrapper",
             timeout=20.0,
         )
-        opened = "/basvuru-listesi" in (page.url or "") or await page.locator(".resume-card").count() > 0
+        opened = (
+            "/basvuru-listesi" in (page.url or "") or await page.locator(".resume-card").count() > 0
+        )
 
     if not opened and listing_url and card_index is not None:
         try:
@@ -1320,7 +1329,9 @@ async def process_jobs_task(
 
                 jobs_processed.append(_backfill_from_card(job_record))
 
-        logger.info("Job processing finished. Total extracted across categories: %d", len(jobs_processed))
+        logger.info(
+            "Job processing finished. Total extracted across categories: %d", len(jobs_processed)
+        )
         return jobs_processed
 
     except Exception as err:
@@ -1362,15 +1373,20 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
         return
 
     try:
+
         async def _ensure_panel_open(panel_id: str, header_title: str):
             try:
                 panel = page.locator(f"#{panel_id}").first
                 if not await panel.is_visible(timeout=1000):
                     logger.info("Opening filter panel: %s (#%s)", header_title, panel_id)
 
-                    header = page.locator(f"#{panel_id}").locator(
-                        "xpath=preceding-sibling::div[contains(@class, 'filter-collapse')]"
-                    ).first
+                    header = (
+                        page.locator(f"#{panel_id}")
+                        .locator(
+                            "xpath=preceding-sibling::div[contains(@class, 'filter-collapse')]"
+                        )
+                        .first
+                    )
 
                     if not await header.is_visible(timeout=1000):
                         header = page.locator("div.filter-collapse", has_text=header_title).first
@@ -1381,7 +1397,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             except Exception as e:
                 logger.warning(f"Could not open accordion panel {panel_id}: {e}")
 
-        async def _fill_vue_multiselect(container_selector: str, input_selector: str, items: List[str]):
+        async def _fill_vue_multiselect(
+            container_selector: str, input_selector: str, items: List[str]
+        ):
             if not items:
                 return
             for item in items:
@@ -1402,7 +1420,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
                         await page.keyboard.press("Enter")
                     await page.wait_for_timeout(200)
                 except Exception as e:
-                    logger.warning(f"Failed to fill multiselect '{container_selector}' with '{item}': {e}")
+                    logger.warning(
+                        f"Failed to fill multiselect '{container_selector}' with '{item}': {e}"
+                    )
 
         personal = filters.get("personal")
         if personal:
@@ -1441,23 +1461,53 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
                 except Exception:
                     pass
 
-            await _fill_vue_multiselect("div.multiselect[name='nationality']", "input.multiselect__input", personal.get("nationality", []))
-            await _fill_vue_multiselect("div.multiselect[name='militaryStatus']", "input.multiselect__input", personal.get("military_status", []))
-            await _fill_vue_multiselect("div.multiselect[name='driverLicence']", "input.multiselect__input", personal.get("driver_licences", []))
+            await _fill_vue_multiselect(
+                "div.multiselect[name='nationality']",
+                "input.multiselect__input",
+                personal.get("nationality", []),
+            )
+            await _fill_vue_multiselect(
+                "div.multiselect[name='militaryStatus']",
+                "input.multiselect__input",
+                personal.get("military_status", []),
+            )
+            await _fill_vue_multiselect(
+                "div.multiselect[name='driverLicence']",
+                "input.multiselect__input",
+                personal.get("driver_licences", []),
+            )
 
             langs = personal.get("languages", [])
             if langs:
-                lang_names = [l["language"] for l in langs if isinstance(l, dict) and l.get("language")]
-                await _fill_vue_multiselect("div.multiselect[name='language']", "input.multiselect__input", lang_names)
+                lang_names = [
+                    l["language"] for l in langs if isinstance(l, dict) and l.get("language")
+                ]
+                await _fill_vue_multiselect(
+                    "div.multiselect[name='language']", "input.multiselect__input", lang_names
+                )
 
-                first_level = next((l.get("min_level") for l in langs if isinstance(l, dict) and l.get("min_level")), None)
+                first_level = next(
+                    (
+                        l.get("min_level")
+                        for l in langs
+                        if isinstance(l, dict) and l.get("min_level")
+                    ),
+                    None,
+                )
                 if first_level:
-                    await _fill_vue_multiselect("div.multiselect[name='languageLevel']", "input.multiselect__input", [first_level])
+                    await _fill_vue_multiselect(
+                        "div.multiselect[name='languageLevel']",
+                        "input.multiselect__input",
+                        [first_level],
+                    )
 
             if personal.get("is_disabled_candidate"):
                 try:
                     disabled_sw = page.locator(".equality-filter input[type='checkbox']").first
-                    if await disabled_sw.is_visible(timeout=1000) and not await disabled_sw.is_checked():
+                    if (
+                        await disabled_sw.is_visible(timeout=1000)
+                        and not await disabled_sw.is_checked()
+                    ):
                         await disabled_sw.check(force=True)
                 except Exception:
                     pass
@@ -1465,7 +1515,10 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             if personal.get("is_disaster_affected"):
                 try:
                     disaster_sw = page.locator(".ug-filter-disaster input[type='checkbox']").first
-                    if await disaster_sw.is_visible(timeout=1000) and not await disaster_sw.is_checked():
+                    if (
+                        await disaster_sw.is_visible(timeout=1000)
+                        and not await disaster_sw.is_checked()
+                    ):
                         await disaster_sw.check(force=True)
                 except Exception:
                     pass
@@ -1473,9 +1526,17 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
         education = filters.get("education")
         if education:
             await _ensure_panel_open(*ACCORDION_PANELS["education"])
-            await _fill_vue_multiselect("#educationLevel", "#educationLevelFormInput", education.get("levels", []))
-            await _fill_vue_multiselect("div.multiselect[name='university']", "input.multiselect__input", education.get("universities", []))
-            await _fill_vue_multiselect("#department", "#departmentFormInput", education.get("departments", []))
+            await _fill_vue_multiselect(
+                "#educationLevel", "#educationLevelFormInput", education.get("levels", [])
+            )
+            await _fill_vue_multiselect(
+                "div.multiselect[name='university']",
+                "input.multiselect__input",
+                education.get("universities", []),
+            )
+            await _fill_vue_multiselect(
+                "#department", "#departmentFormInput", education.get("departments", [])
+            )
 
         exp = filters.get("experience")
         if exp:
@@ -1529,8 +1590,14 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
         location = filters.get("location")
         if location:
             await _ensure_panel_open(*ACCORDION_PANELS["location"])
-            await _fill_vue_multiselect("#location", "#locationFormInput", location.get("current_locations", []))
-            await _fill_vue_multiselect("div.multiselect[name='preferCity']", "input.multiselect__input", location.get("preferred_cities", []))
+            await _fill_vue_multiselect(
+                "#location", "#locationFormInput", location.get("current_locations", [])
+            )
+            await _fill_vue_multiselect(
+                "div.multiselect[name='preferCity']",
+                "input.multiselect__input",
+                location.get("preferred_cities", []),
+            )
 
         try:
             submit_btn = page.locator("div.filter-footer button[type='submit']").first
@@ -1546,10 +1613,14 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             logger.warning(f"Error submitting the filter form: {e}")
 
     except Exception as err:
-        logger.warning(f"Unexpected error encountered while populating candidate form filters: {err}")
+        logger.warning(
+            f"Unexpected error encountered while populating candidate form filters: {err}"
+        )
 
 
-async def extract_and_send_jobs(page: Page, target_api_url: str, limit: int = 100) -> Dict[str, Any]:
+async def extract_and_send_jobs(
+    page: Page, target_api_url: str, limit: int = 100
+) -> Dict[str, Any]:
     logger.info("Starting job extraction task...")
     extracted_jobs = await process_jobs_task(page, limit=limit)
     payload = {

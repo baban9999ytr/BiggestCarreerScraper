@@ -22,6 +22,7 @@ Usage (httpx):
     from app.core.proxy import get_httpx_proxies
     client = httpx.AsyncClient(proxies=get_httpx_proxies())
 """
+
 from __future__ import annotations
 
 import logging
@@ -42,7 +43,7 @@ def get_playwright_proxy() -> Optional[dict]:
     Credentials embedded in the URL (http://user:pass@host:port) are returned
     as-is in the server field — Playwright accepts that format directly.
     """
-    from app.core.config import settings  
+    from app.core.config import settings
 
     proxy_url = settings.outbound_proxy
     if not proxy_url:
@@ -83,6 +84,7 @@ def get_httpx_proxies() -> Optional[dict[str, str]]:
 def _redact(url: str) -> str:
     try:
         from urllib.parse import urlparse, urlunparse
+
         p = urlparse(url)
         if p.password:
             netloc = f"{p.username}:***@{p.hostname}" + (f":{p.port}" if p.port else "")

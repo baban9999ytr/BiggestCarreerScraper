@@ -2,19 +2,21 @@ import asyncio
 import json
 import logging
 import os
+
 from fastapi import APIRouter, BackgroundTasks, HTTPException, WebSocket
 from fastapi.responses import StreamingResponse
 
+from app.api.dependencies import require_session
 from app.core.config import settings
-from config import ACTIVE_LOGIN_STATES, SESSIONS, args
+from app.core.ws_auth import ws_require_session
 from app.models.schemas import LoginCredentials, TokenOnly, TwoFactorChoice, TwoFactorSubmission
 from app.models.session import new_session, public
-from app.api.dependencies import require_session
-from app.core.ws_auth import ws_require_session
 from automation import handle_login_and_verification
+from config import ACTIVE_LOGIN_STATES, SESSIONS, args
 
 logger = logging.getLogger("kariyer_api.auth")
 router = APIRouter()
+
 
 async def capture_2fa_post_submission_screenshots(token: str, duration_seconds: int = 60) -> None:
     session = SESSIONS.get(token)
@@ -35,7 +37,9 @@ async def capture_2fa_post_submission_screenshots(token: str, duration_seconds: 
                 async with session["lock"]:
                     await page.screenshot(path=filepath, type="jpeg", quality=60)
 
-                logger.info("Captured post-2FA screenshot (%d/%ds): %s", step, duration_seconds, filename)
+                logger.info(
+                    "Captured post-2FA screenshot (%d/%ds): %s", step, duration_seconds, filename
+                )
             except Exception as e:
                 logger.debug("Failed to take post-2FA screenshot tick %d: %s", step, e)
 
@@ -47,7 +51,14 @@ async def capture_2fa_post_submission_screenshots(token: str, duration_seconds: 
 @router.post("/login")
 async def login(c: LoginCredentials, tasks: BackgroundTasks):
     token, s = new_session(c.email)
-    tasks.add_task(handle_login_and_verification, token, c.email, c.password, True, getattr(args, "testerhtml", False))    
+    tasks.add_task(
+        handle_login_and_verification,
+        token,
+        c.email,
+        c.password,
+        True,
+        getattr(args, "testerhtml", False),
+    )
     return {
         "status": s["status"],
         "token": token,
@@ -66,7 +77,11 @@ async def status(token: str):
         try:
             url = page.url.lower()
             if "ats.kariyer.net" in url and "login" not in url:
-                if (await page.locator("#user-info, #dashboard-job-list, .wide-card.job-card").count()) > 0:
+                if (
+                    await page.locator(
+                        "#user-info, #dashboard-job-list, .wide-card.job-card"
+                    ).count()
+                ) > 0:
                     s["status"] = "success"
                     s["screen"] = "authenticated"
         except Exception:
@@ -117,7 +132,13 @@ async def choose(p: TwoFactorChoice):
         raise HTTPException(400, "Invalid 2FA method. Must be 'email' or 'sms'.")
     s["2fa_method"] = p.method
     s["error"] = None
-    logger.info("2FA method accepted via API: %s (state was '%s', screen=%s, card=%s)", p.method, s["status"], s.get("screen"), s.get("2fa_card"))
+    logger.info(
+        "2FA method accepted via API: %s (state was '%s', screen=%s, card=%s)",
+        p.method,
+        s["status"],
+        s.get("screen"),
+        s.get("2fa_card"),
+    )
     return {
         "status": "accepted",
         "current_state": s["status"],
@@ -138,7 +159,12 @@ async def code(p: TwoFactorSubmission, tasks: BackgroundTasks):
         )
     s["2fa_code"] = p.code
     s["error"] = None
-    logger.info("2FA code accepted via API (state was '%s', screen=%s, card=%s)", s["status"], s.get("screen"), s.get("2fa_card"))
+    logger.info(
+        "2FA code accepted via API (state was '%s', screen=%s, card=%s)",
+        s["status"],
+        s.get("screen"),
+        s.get("2fa_card"),
+    )
     tasks.add_task(capture_2fa_post_submission_screenshots, p.token, 60)
     return {
         "status": "accepted",
@@ -152,7 +178,9 @@ async def code(p: TwoFactorSubmission, tasks: BackgroundTasks):
 async def resend_2fa(p: TokenOnly):
     s = await require_session(p.token)
     if s["status"] not in ACTIVE_LOGIN_STATES:
-        raise HTTPException(400, f"Session is in terminal state '{s['status']}' and cannot resend 2FA.")
+        raise HTTPException(
+            400, f"Session is in terminal state '{s['status']}' and cannot resend 2FA."
+        )
     s["2fa_resend"] = True
     s["2fa_code"] = None
     s["error"] = None

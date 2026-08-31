@@ -11,15 +11,13 @@ FileResponse is served. The function rejects any filename that:
 - Does not match the strict alphanumeric pattern
 - Resolves outside the configured exports directory
 """
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-
-_SAFE_FILENAME_RE = re.compile(
-    r"^[a-zA-Z0-9][a-zA-Z0-9_\-]{0,199}\.(json|csv)$"
-)
+_SAFE_FILENAME_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_\-]{0,199}\.(json|csv)$")
 
 
 class ExportSecurityError(ValueError):
@@ -52,14 +50,10 @@ def safe_export_path(export_dir: str, filename: str) -> Path:
         raise ExportSecurityError("Filename must be a non-empty string.")
 
     if "%" in filename:
-        raise ExportSecurityError(
-            "URL-encoded characters are not permitted in export filenames."
-        )
+        raise ExportSecurityError("URL-encoded characters are not permitted in export filenames.")
 
     if "/" in filename or "\\" in filename:
-        raise ExportSecurityError(
-            "Path separators are not permitted in export filenames."
-        )
+        raise ExportSecurityError("Path separators are not permitted in export filenames.")
 
     if not _SAFE_FILENAME_RE.match(filename):
         raise ExportSecurityError(
@@ -74,9 +68,7 @@ def safe_export_path(export_dir: str, filename: str) -> Path:
     try:
         candidate.relative_to(export_root)
     except ValueError:
-        raise ExportSecurityError(
-            "Requested file is outside the permitted export directory."
-        )
+        raise ExportSecurityError("Requested file is outside the permitted export directory.")
 
     if not candidate.is_file():
         raise ExportSecurityError("Export file not found.")

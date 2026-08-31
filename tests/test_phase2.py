@@ -3,9 +3,10 @@ import os
 import unittest
 from datetime import datetime, timezone
 
-from app.core.metadata_store import metadata_store
 from app.core.browser_manager import browser_manager
+from app.core.metadata_store import metadata_store
 from config import SESSIONS
+
 
 class MockPage:
     def __init__(self):
@@ -37,7 +38,6 @@ class MockBrowser:
 
 
 class TestPhase2Features(unittest.IsolatedAsyncioTestCase):
-    
     async def asyncSetUp(self):
         # Override DB path for tests
         metadata_store.db_path = "test_metadata.sqlite"
@@ -63,23 +63,23 @@ class TestPhase2Features(unittest.IsolatedAsyncioTestCase):
             "expires_at": datetime.now(timezone.utc).isoformat(),
             # These shouldn't be serialized:
             "page": MockPage(),
-            "lock": asyncio.Lock()
+            "lock": asyncio.Lock(),
         }
-        
+
         # Save session
         await metadata_store.save_session(token, test_session)
-        
+
         # Simulate a crash/restart by clearing memory
         SESSIONS.clear()
-        
+
         # Reload from DB
         all_sessions = await metadata_store.get_all_sessions()
         self.assertIn(token, all_sessions)
-        
+
         reloaded = all_sessions[token]
         self.assertEqual(reloaded["email"], "test@example.com")
         self.assertEqual(reloaded["status"], "waiting_for_2fa_code")
-        
+
         # Ensure runtime objects were NOT serialized
         self.assertNotIn("page", reloaded)
         self.assertNotIn("lock", reloaded)
@@ -89,35 +89,35 @@ class TestPhase2Features(unittest.IsolatedAsyncioTestCase):
         page = MockPage()
         context = MockContext()
         browser = MockBrowser()
-        
+
         session = {
             "token": token,
             "status": "authenticated",
             "page": page,
             "context": context,
             "browser": browser,
-            "lock": asyncio.Lock()
+            "lock": asyncio.Lock(),
         }
         SESSIONS[token] = session
-        
+
         # Verify initial state
         self.assertFalse(page.close_called)
         self.assertFalse(context.close_called)
         self.assertFalse(browser.close_called)
-        
+
         # Cleanup
         await browser_manager.cleanup_session(token, close_status="failed_due_to_error")
-        
+
         # Verify Playwright objects were closed
         self.assertTrue(page.close_called)
         self.assertTrue(context.close_called)
         self.assertTrue(browser.close_called)
-        
+
         # Verify runtime dictionary was cleansed of playwright objects
         self.assertNotIn("page", session)
         self.assertNotIn("context", session)
         self.assertNotIn("browser", session)
-        
+
         # Verify status update in SQLite
         db_meta = await metadata_store.get_session(token)
         self.assertIsNotNone(db_meta)

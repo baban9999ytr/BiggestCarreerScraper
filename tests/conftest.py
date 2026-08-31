@@ -1,12 +1,13 @@
 import asyncio
 import os
+
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
-from main import app
 from app.core.metadata_store import metadata_store
 from config import SESSIONS
+from main import app
 
 
 @pytest_asyncio.fixture

@@ -19,6 +19,7 @@ BASE_URL = "https://ats.kariyer.net"
 CACHE_FILENAME = "extracted_cvs.json"
 CACHE_TTL_DAYS = 180
 from app.core.config import settings
+
 CV_SCRAPE_DELAY_SECONDS = settings.cv_scrape_delay_seconds
 CACHE_VERSION = 1
 
@@ -238,7 +239,9 @@ def save_cv_store(path: Path, store: Dict[str, Any]) -> None:
         raise
 
 
-def cv_is_fresh(record: Optional[Dict[str, Any]], now: Optional[datetime] = None, ttl_days: int = CACHE_TTL_DAYS) -> bool:
+def cv_is_fresh(
+    record: Optional[Dict[str, Any]], now: Optional[datetime] = None, ttl_days: int = CACHE_TTL_DAYS
+) -> bool:
     if not record or not isinstance(record, dict):
         return False
     if record.get("error") and not record.get("cv"):
@@ -321,7 +324,9 @@ async def scrape_candidate_cv(page: Page, detail_url: str) -> Dict[str, Any]:
         try:
             await page.wait_for_selector("#app:not(.loading)", timeout=15000)
         except Exception:
-            logger.warning("App element still has 'loading' class, proceeding with fallback checks...")
+            logger.warning(
+                "App element still has 'loading' class, proceeding with fallback checks..."
+            )
 
         await page.wait_for_selector(
             ".personal-information h1 b, .work-information, #birthDate, .resume-candidate-card",
@@ -409,7 +414,6 @@ async def extract_cvs_for_jobs(
     force_refresh: bool = False,
     ttl_days: int = CACHE_TTL_DAYS,
 ) -> AsyncGenerator[Dict[str, Any], None]:
-  
     cache_path = Path(cache_path)
     store = load_cv_store(cache_path)
     now = utcnow()
@@ -448,7 +452,11 @@ async def extract_cvs_for_jobs(
             detail_url = candidate.get("detail_url") or ""
             if not detail_url:
                 skipped_no_url += 1
-                store["_run_stats"] = {"live_scrapes": live_scrapes, "cache_hits": cache_hits, "skipped_no_url": skipped_no_url}
+                store["_run_stats"] = {
+                    "live_scrapes": live_scrapes,
+                    "cache_hits": cache_hits,
+                    "skipped_no_url": skipped_no_url,
+                }
                 yield store
                 continue
 
@@ -479,7 +487,11 @@ async def extract_cvs_for_jobs(
                     candidate.get("name") or "?",
                     cached.get("extracted_at"),
                 )
-                store["_run_stats"] = {"live_scrapes": live_scrapes, "cache_hits": cache_hits, "skipped_no_url": skipped_no_url}
+                store["_run_stats"] = {
+                    "live_scrapes": live_scrapes,
+                    "cache_hits": cache_hits,
+                    "skipped_no_url": skipped_no_url,
+                }
                 yield store
                 continue
 
@@ -497,12 +509,15 @@ async def extract_cvs_for_jobs(
                 }
             job_entry["last_extracted_at"] = iso(extracted_at)
             save_cv_store(cache_path, store)
-            
-            store["_run_stats"] = {"live_scrapes": live_scrapes, "cache_hits": cache_hits, "skipped_no_url": skipped_no_url}
-            
-        
+
+            store["_run_stats"] = {
+                "live_scrapes": live_scrapes,
+                "cache_hits": cache_hits,
+                "skipped_no_url": skipped_no_url,
+            }
+
             yield store
-            
+
             await _pace_after_live_scrape(delay_seconds)
 
         job_entry["last_extracted_at"] = iso(utcnow())
@@ -553,7 +568,7 @@ async def process_candidate_details_for_token(
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     cache_file = Path(cache_path) if cache_path else out_dir / CACHE_FILENAME
-    
+
     listings_path = out_dir / f"kariyer_candidate_details_{token}.json"
 
     async for store in extract_cvs_for_jobs(
@@ -564,12 +579,12 @@ async def process_candidate_details_for_token(
         force_refresh=force_refresh,
     ):
         listings = listings_view(store)
-        
+
         tmp_path = listings_path.with_suffix(".tmp.json")
         with tmp_path.open("w", encoding="utf-8") as f:
             json.dump(listings, f, ensure_ascii=False, indent=2)
             f.write("\n")
-        
+
         tmp_path.replace(listings_path)
 
     logger.info("Finished canonical cache to %s", cache_file)
@@ -579,12 +594,20 @@ async def process_candidate_details_for_token(
 async def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Extract Kariyer.net ATS CVs with a 6-month cache.")
-    parser.add_argument("token", nargs="?", default="", help="jobs file token (kariyer_jobs_{token}_*.json)")
+    parser = argparse.ArgumentParser(
+        description="Extract Kariyer.net ATS CVs with a 6-month cache."
+    )
+    parser.add_argument(
+        "token", nargs="?", default="", help="jobs file token (kariyer_jobs_{token}_*.json)"
+    )
     parser.add_argument("--jobs-json", dest="jobs_json", default="", help="explicit jobs JSON path")
-    parser.add_argument("--cache", dest="cache", default=CACHE_FILENAME, help="extracted_cvs.json path")
+    parser.add_argument(
+        "--cache", dest="cache", default=CACHE_FILENAME, help="extracted_cvs.json path"
+    )
     parser.add_argument("--delay", dest="delay", type=int, default=CV_SCRAPE_DELAY_SECONDS)
-    parser.add_argument("--force", dest="force", action="store_true", help="ignore cache and re-scrape")
+    parser.add_argument(
+        "--force", dest="force", action="store_true", help="ignore cache and re-scrape"
+    )
     args = parser.parse_args()
 
     async with async_playwright() as p:
@@ -596,10 +619,10 @@ async def main():
                 with open(args.jobs_json, "r", encoding="utf-8") as f:
                     payload = json.load(f)
                 jobs = _normalize_jobs_payload(payload)
-                
-                out_path = Path(args.jobs_json).with_suffix('.extracted.json')
+
+                out_path = Path(args.jobs_json).with_suffix(".extracted.json")
                 store = None
-                
+
                 # Incrementally yield candidates
                 async for current_store in extract_cvs_for_jobs(
                     page,
@@ -610,14 +633,16 @@ async def main():
                 ):
                     store = current_store
                     listings = listings_view(store)
-                    
-                    tmp_out = out_path.with_suffix('.tmp.json')
+
+                    tmp_out = out_path.with_suffix(".tmp.json")
                     with tmp_out.open("w", encoding="utf-8") as f:
                         json.dump(listings, f, ensure_ascii=False, indent=2)
                     tmp_out.replace(out_path)
-                    
+
                 if store:
-                    print(f"Extraction complete. Cache: {args.cache} stats={store.get('_run_stats')}")
+                    print(
+                        f"Extraction complete. Cache: {args.cache} stats={store.get('_run_stats')}"
+                    )
             else:
                 result_file = await process_candidate_details_for_token(
                     args.token,

@@ -1,11 +1,12 @@
 import pytest
+
 from app.services.job_filter_service import (
-    normalize_turkish_text,
+    evaluate_candidate_filters,
     matches_age_criteria,
     matches_gender_criteria,
-    matches_military_status,
     matches_language_level,
-    evaluate_candidate_filters,
+    matches_military_status,
+    normalize_turkish_text,
 )
 
 

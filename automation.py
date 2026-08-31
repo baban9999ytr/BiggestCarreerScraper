@@ -5,11 +5,10 @@ import asyncio
 import base64
 import csv
 import json
-
 import logging
 import os
-import re
 import random
+import re
 import sys
 import uuid
 from contextlib import asynccontextmanager
@@ -30,6 +29,7 @@ from pydantic import BaseModel, Field
 
 try:
     import ddddocr
+
     _ocr = ddddocr.DdddOcr(det=False, ocr=False, show_ad=False)
 except Exception:
     _ocr = None
@@ -41,8 +41,8 @@ except ImportError as e:
     Geeked = None
     logging.getLogger("main").warning("GeekedTest not found. Auto-captcha disabled: %s", e)
 
-from config import SESSIONS, ACTIVE_LOGIN_STATES, logger, DEBUG_DIR, LOGIN_URL, args
-from automation_process_jobs import extract_current_job, process_jobs_task, install_overlay_killer
+from automation_process_jobs import extract_current_job, install_overlay_killer, process_jobs_task
+from config import ACTIVE_LOGIN_STATES, DEBUG_DIR, LOGIN_URL, SESSIONS, args, logger
 
 
 def aid(element_id: str) -> str:
@@ -50,14 +50,24 @@ def aid(element_id: str) -> str:
 
 
 from app.core.config import settings
-_TR_MAP = str.maketrans({
-    "I": "i", "İ": "i", "ı": "i",
-    "Ş": "s", "ş": "s",
-    "Ğ": "g", "ğ": "g",
-    "Ü": "u", "ü": "u",
-    "Ö": "o", "ö": "o",
-    "Ç": "c", "ç": "c",
-})
+
+_TR_MAP = str.maketrans(
+    {
+        "I": "i",
+        "İ": "i",
+        "ı": "i",
+        "Ş": "s",
+        "ş": "s",
+        "Ğ": "g",
+        "ğ": "g",
+        "Ü": "u",
+        "ü": "u",
+        "Ö": "o",
+        "ö": "o",
+        "Ç": "c",
+        "ç": "c",
+    }
+)
 NO_CAPTCHA_AI_KEY = settings.captcha_api_key
 
 _SEND_CODE_LABELS = [
@@ -231,7 +241,9 @@ async def read_login_error(page: Page) -> Optional[str]:
             "hesabınız kilitlendi",
         ):
             if marker.lower() in body.lower():
-                line = next((x.strip() for x in body.splitlines() if marker.lower() in x.lower()), marker)
+                line = next(
+                    (x.strip() for x in body.splitlines() if marker.lower() in x.lower()), marker
+                )
                 return re.sub(r"\s+", " ", line)
     except Exception:
         pass
@@ -239,7 +251,9 @@ async def read_login_error(page: Page) -> Optional[str]:
 
 
 async def login_form_visible(page: Page) -> bool:
-    return await any_visible(page, "#loginNameFormInput") and await any_visible(page, "form button[type='submit']")
+    return await any_visible(page, "#loginNameFormInput") and await any_visible(
+        page, "form button[type='submit']"
+    )
 
 
 async def is_user_logged_in(page: Page) -> bool:
@@ -263,7 +277,6 @@ async def is_user_logged_in(page: Page) -> bool:
 
 
 async def click_left_corner_to_dismiss_overlay(page: Page) -> None:
-   
     try:
         viewport = await page.evaluate(
             """() => ({
@@ -290,8 +303,7 @@ async def click_left_corner_to_dismiss_overlay(page: Page) -> None:
 
 
 async def post_login_cleanup(page: Page) -> bool:
-   
-    for _ in range(30):  
+    for _ in range(30):
         if await is_user_logged_in(page):
             logger.info("Authenticated dashboard detected after login/2FA.")
 
@@ -308,13 +320,27 @@ async def post_login_cleanup(page: Page) -> bool:
 
 
 async def detect_2fa_card(page: Page) -> Optional[str]:
-    if await any_visible(page, "button:has-text('DEVAM ET')") or await any_visible(page, "text=Hesabınız doğrulandı"):
+    if await any_visible(page, "button:has-text('DEVAM ET')") or await any_visible(
+        page, "text=Hesabınız doğrulandı"
+    ):
         return "devam_et"
-    if await any_visible(page, aid("2faCodeFormInput")) or await any_visible(page, aid("2faCodeFormGroup")) or await any_visible(page, aid("2faCode")):
+    if (
+        await any_visible(page, aid("2faCodeFormInput"))
+        or await any_visible(page, aid("2faCodeFormGroup"))
+        or await any_visible(page, aid("2faCode"))
+    ):
         return "code_entry"
-    if await any_visible(page, aid("2faPhoneFormInput")) or await any_visible(page, aid("2faPhoneFormGroup")) or await any_visible(page, aid("2faPhone")):
+    if (
+        await any_visible(page, aid("2faPhoneFormInput"))
+        or await any_visible(page, aid("2faPhoneFormGroup"))
+        or await any_visible(page, aid("2faPhone"))
+    ):
         return "sms_send"
-    if await any_visible(page, aid("2faEmailFormInput")) or await any_visible(page, aid("2faEmailFormGroup")) or await any_visible(page, aid("2faEmail")):
+    if (
+        await any_visible(page, aid("2faEmailFormInput"))
+        or await any_visible(page, aid("2faEmailFormGroup"))
+        or await any_visible(page, aid("2faEmail"))
+    ):
         return "email_send"
     if await any_visible(page, "img[alt*='sms' i], img[alt*='phone' i]"):
         return "sms_send"
@@ -331,11 +357,15 @@ async def twofa_visible(page: Page) -> bool:
     card = await detect_2fa_card(page)
     if card:
         return True
-    if await any_visible(page, ".auth-new .card-wrapper, .auth-new, .page-view.auth-new, .card-wrapper"):
+    if await any_visible(
+        page, ".auth-new .card-wrapper, .auth-new, .page-view.auth-new, .card-wrapper"
+    ):
         return True
 
     probes = [
-        aid("2faEmail"), aid("2faCode"), aid("2faPhone"),
+        aid("2faEmail"),
+        aid("2faCode"),
+        aid("2faPhone"),
         "text=Lütfen hesabınızı doğrulayın",
         "text=SMS ile doğrulama yapın",
         "text=E-posta ile doğrulama yapın",
@@ -344,7 +374,7 @@ async def twofa_visible(page: Page) -> bool:
         "text=6 Haneli Doğrulama Kodu",
         "h2:has-text('hesabınızı doğrulayın')",
         "h2:has-text('doğrulama kodunu girin')",
-        "button:has-text('DEVAM ET')"
+        "button:has-text('DEVAM ET')",
     ]
     for sel in probes:
         if await any_visible(page, sel):
@@ -362,7 +392,7 @@ async def twofa_visible(page: Page) -> bool:
         "doğrulama kodunu gönder",
         "doğrulama kodunu girin",
         "6 haneli doğrulama kodu",
-        "hesabınız doğrulandı"
+        "hesabınız doğrulandı",
     )
     return any(n in body_l for n in needles)
 
@@ -380,7 +410,9 @@ async def authenticated_visible(page: Page) -> bool:
         return True
 
     try:
-        if await page.locator(".job-list-new, a[href*='ilan'], a[href*='aday'], text=İlanlarım, text=Yayındaki İlanlar").first.is_visible(timeout=1000):
+        if await page.locator(
+            ".job-list-new, a[href*='ilan'], a[href*='aday'], text=İlanlarım, text=Yayındaki İlanlar"
+        ).first.is_visible(timeout=1000):
             return True
     except Exception:
         pass
@@ -421,7 +453,9 @@ async def save_debug_artifacts(page: Page, s: dict[str, Any], label: str) -> Non
             f.write(html)
     except Exception:
         html_path = ""
-    s["debug_artifacts"] = {k: v for k, v in {"screenshot": screenshot_path, "html": html_path}.items() if v}
+    s["debug_artifacts"] = {
+        k: v for k, v in {"screenshot": screenshot_path, "html": html_path}.items() if v
+    }
 
 
 async def wait_login_outcome(page: Page, s: dict[str, Any], timeout: float = 60) -> str:
@@ -437,7 +471,9 @@ async def wait_login_outcome(page: Page, s: dict[str, Any], timeout: float = 60)
         if kind == "2fa":
             s["2fa_card"] = await detect_2fa_card(page)
         if kind != last_kind:
-            logger.info("Screen classified as %s url=%s card=%s", kind, s.get("last_url"), s.get("2fa_card"))
+            logger.info(
+                "Screen classified as %s url=%s card=%s", kind, s.get("last_url"), s.get("2fa_card")
+            )
             last_kind = kind
         if kind == "2fa":
             return "2fa"
@@ -479,7 +515,9 @@ async def first_visible(page: Page, selector: str) -> Optional[Any]:
     return None
 
 
-async def visible_by_norm_text(page: Page, tag: str, wanted: str, exact: bool = True) -> Optional[Any]:
+async def visible_by_norm_text(
+    page: Page, tag: str, wanted: str, exact: bool = True
+) -> Optional[Any]:
     target = norm_text(wanted)
     loc = page.locator(tag)
     try:
@@ -505,7 +543,7 @@ async def visible_by_norm_text(page: Page, tag: str, wanted: str, exact: bool = 
 async def visible_button_exact_text(page: Page, exact_text: str) -> Optional[Any]:
     buttons = page.locator("button")
     count = await buttons.count()
-    
+
     for i in range(count):
         btn = buttons.nth(i)
         try:
@@ -515,7 +553,7 @@ async def visible_button_exact_text(page: Page, exact_text: str) -> Optional[Any
                     return btn
         except Exception:
             continue
-            
+
     return await visible_by_norm_text(page, "button", exact_text, exact=True)
 
 
@@ -527,7 +565,9 @@ async def force_click_element(page: Page, locator: Any) -> bool:
         await locator.click(force=True, timeout=3000)
         return True
     except Exception as e:
-        logger.warning("Playwright click failed, executing JavaScript DOM force-click fallback: %s", e)
+        logger.warning(
+            "Playwright click failed, executing JavaScript DOM force-click fallback: %s", e
+        )
 
     try:
         handle = await locator.element_handle() if hasattr(locator, "element_handle") else locator
@@ -555,7 +595,9 @@ async def force_click_element(page: Page, locator: Any) -> bool:
     return False
 
 
-async def click_in_visible_card(page: Page, tag: str, texts: list[str], exact: bool = True) -> dict[str, Any]:
+async def click_in_visible_card(
+    page: Page, tag: str, texts: list[str], exact: bool = True
+) -> dict[str, Any]:
     for t in texts:
         el = await visible_by_norm_text(page, tag, t, exact=exact)
         if el is not None:
@@ -566,7 +608,9 @@ async def click_in_visible_card(page: Page, tag: str, texts: list[str], exact: b
             except Exception as e:
                 logger.warning("Playwright click failed on %s %r: %s", tag, t, e)
     try:
-        result = await page.evaluate(_CLICK_VISIBLE_JS, {"tag": tag, "needles": texts, "exact": exact})
+        result = await page.evaluate(
+            _CLICK_VISIBLE_JS, {"tag": tag, "needles": texts, "exact": exact}
+        )
     except Exception as e:
         logger.warning("JS card click failed: %s", e)
         return {"ok": False, "visible": []}
@@ -659,7 +703,7 @@ async def submit_login_form(page: Page, email: str, password: str) -> None:
 
     await user_input.click(force=True)
     await user_input.fill(email)
-    
+
     await pass_input.click(force=True)
     await pass_input.fill(password)
 
@@ -686,7 +730,11 @@ async def wait_and_click_devam_et(page: Page, timeout: float = 12.0) -> bool:
 
 async def do_2fa(page: Page, s: dict[str, Any]) -> bool:
     for _ in range(50):
-        if await detect_2fa_card(page) or await twofa_visible(page) or url_implies_2fa(page_url(page)):
+        if (
+            await detect_2fa_card(page)
+            or await twofa_visible(page)
+            or url_implies_2fa(page_url(page))
+        ):
             break
         await asyncio.sleep(0.2)
 
@@ -711,7 +759,10 @@ async def do_2fa(page: Page, s: dict[str, Any]) -> bool:
         if card == "devam_et":
             if await wait_and_click_devam_et(page, timeout=3.0):
                 await page.wait_for_timeout(2000)
-                if await authenticated_visible(page) or await wait_login_outcome(page, s, timeout=20) == "authenticated":
+                if (
+                    await authenticated_visible(page)
+                    or await wait_login_outcome(page, s, timeout=20) == "authenticated"
+                ):
                     await post_login_cleanup(page)
                     return True
 
@@ -798,10 +849,8 @@ async def do_2fa(page: Page, s: dict[str, Any]) -> bool:
             last_consumed_code = None
             s["status"] = "waiting_for_2fa_code"
             await asyncio.sleep(0.6)
-            
-            
-            
-            
+
+
 async def _start_html_dumper_loop(token: str, interval: int = 10):
     """Playwright sayfası oluştuğu andan itibaren her 10 saniyede bir HTML'i kaydeder."""
     session = SESSIONS.get(token)
@@ -830,12 +879,9 @@ async def _start_html_dumper_loop(token: str, interval: int = 10):
                 logger.debug("HTML dumper tick error for token %s: %s", token, e)
 
         await asyncio.sleep(interval)
-        
-        
-        
+
 
 async def hold_for_captcha_then_continue(page: Page, s: dict[str, Any]) -> str:
-    
     s["status"] = "waiting_for_captcha"
     s["screen"] = "captcha"
     logger.info("CAPTCHA detected! Attempting automatic Geetest bypass...")
@@ -886,7 +932,9 @@ async def hold_for_captcha_then_continue(page: Page, s: dict[str, Any]) -> str:
         await asyncio.sleep(0.4)
 
 
-async def hold_for_post_login(page: Page, s: dict[str, Any], email: str = "", password: str = "") -> str:
+async def hold_for_post_login(
+    page: Page, s: dict[str, Any], email: str = "", password: str = ""
+) -> str:
     s["status"] = "logging_in"
     last_submit = asyncio.get_running_loop().time()
     while True:
@@ -913,11 +961,7 @@ async def hold_for_post_login(page: Page, s: dict[str, Any], email: str = "", pa
 
 
 async def handle_login_and_verification(
-    token: str, 
-    email: str, 
-    password: str, 
-    keep_alive: bool = True,
-    testerhtml: bool = False
+    token: str, email: str, password: str, keep_alive: bool = True, testerhtml: bool = False
 ) -> None:
     s = SESSIONS[token]
     pw = browser = context = None
@@ -930,17 +974,18 @@ async def handle_login_and_verification(
         is_headless = not is_testerhtml
 
         browser = await pw.chromium.launch(
-            headless=False, 
-            # headless=is_headless, 
-            args=["--no-sandbox", "--disable-gpu"]
+            headless=False,
+            # headless=is_headless,
+            args=["--no-sandbox", "--disable-gpu"],
         )
 
         from app.core.proxy import get_playwright_proxy
+
         _proxy_cfg = get_playwright_proxy()
         context = await browser.new_context(
             viewport={"width": 1280, "height": 1024},
             locale="tr-TR",
-            **( {"proxy": _proxy_cfg} if _proxy_cfg else {} ),
+            **({"proxy": _proxy_cfg} if _proxy_cfg else {}),
         )
         await install_overlay_killer(context)
 
@@ -972,7 +1017,11 @@ async def handle_login_and_verification(
 
         if outcome == "2fa":
             await do_2fa(page, s)
-            outcome = "authenticated" if (await authenticated_visible(page)) else await classify_screen(page)
+            outcome = (
+                "authenticated"
+                if (await authenticated_visible(page))
+                else await classify_screen(page)
+            )
 
         if outcome == "authenticated" or await authenticated_visible(page):
             await post_login_cleanup(page)
@@ -982,9 +1031,15 @@ async def handle_login_and_verification(
             if not s.get("error"):
                 s["error"] = "Login was rejected."
         elif outcome == "2fa" or url_implies_2fa(page_url(page)) or await twofa_visible(page):
-            s["status"] = "waiting_for_2fa_code" if s.get("2fa_card") == "code_entry" else "waiting_for_2fa_choice"
+            s["status"] = (
+                "waiting_for_2fa_code"
+                if s.get("2fa_card") == "code_entry"
+                else "waiting_for_2fa_choice"
+            )
         else:
-            s["status"] = s.get("status") if s.get("status") in ACTIVE_LOGIN_STATES else "logging_in"
+            s["status"] = (
+                s.get("status") if s.get("status") in ACTIVE_LOGIN_STATES else "logging_in"
+            )
 
         if keep_alive:
             while token in SESSIONS and s.get("status") != "closed":
@@ -1038,7 +1093,7 @@ async def auto_solve_and_submit(page: Page) -> bool:
     try:
         await page.wait_for_selector(".geetest_bg", timeout=7000)
 
-        images = await page.evaluate('''() => {
+        images = await page.evaluate("""() => {
             const bgEl = document.querySelector('.geetest_bg');
             const sliceEl = document.querySelector('.geetest_slice_bg');
             
@@ -1053,7 +1108,7 @@ async def auto_solve_and_submit(page: Page) -> bool:
                 bg: extractUrl(bgEl),
                 slice: extractUrl(sliceEl)
             };
-        }''')
+        }""")
 
         bg_url = images.get("bg")
         slice_url = images.get("slice")
@@ -1075,10 +1130,10 @@ async def auto_solve_and_submit(page: Page) -> bool:
         if not box:
             return False
 
-        canvas_width = await page.evaluate('''() => {
+        canvas_width = await page.evaluate("""() => {
             const el = document.querySelector('.geetest_window') || document.querySelector('.geetest_bg');
             return el ? el.getBoundingClientRect().width : 300;
-        }''')
+        }""")
 
         scale_factor = canvas_width / 300.0
         start_x = box["x"] + box["width"] / 2
@@ -1108,7 +1163,8 @@ async def auto_solve_and_submit(page: Page) -> bool:
 
 async def dismiss_overlays(page: Page) -> None:
     try:
-        await page.add_style_tag(content="""
+        await page.add_style_tag(
+            content="""
             /* Hide modal backdrops, promo wheels, campaign popups, and banners */
             .modal-backdrop, 
             .modal.show, 
@@ -1124,6 +1180,7 @@ async def dismiss_overlays(page: Page) -> None:
             body { 
                 overflow: auto !important; 
             }
-        """)
+        """
+        )
     except Exception as e:
         logger.debug("Overlay CSS injection skipped: %s", e)

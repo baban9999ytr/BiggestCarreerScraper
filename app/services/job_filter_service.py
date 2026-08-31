@@ -4,18 +4,28 @@ app/services/job_filter_service.py
 Pure-function predicate filters for job applicant matching and candidate evaluation.
 Decoupled from Playwright DOM automation to enable fast, headless unit testing.
 """
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-_TR_MAP = str.maketrans({
-    "I": "i", "İ": "i", "ı": "i",
-    "Ş": "s", "ş": "s",
-    "Ğ": "g", "ğ": "g",
-    "Ü": "u", "ü": "u",
-    "Ö": "o", "ö": "o",
-    "Ç": "c", "ç": "c",
-})
+_TR_MAP = str.maketrans(
+    {
+        "I": "i",
+        "İ": "i",
+        "ı": "i",
+        "Ş": "s",
+        "ş": "s",
+        "Ğ": "g",
+        "ğ": "g",
+        "Ü": "u",
+        "ü": "u",
+        "Ö": "o",
+        "ö": "o",
+        "Ç": "c",
+        "ç": "c",
+    }
+)
 
 LANGUAGE_LEVEL_RANKS: Dict[str, int] = {
     "baslangic": 1,
@@ -33,13 +43,17 @@ def normalize_turkish_text(text: Optional[str]) -> str:
     return " ".join(text.replace("\u0307", "").translate(_TR_MAP).lower().split())
 
 
-def matches_age_criteria(candidate_age: Optional[int], min_age: int = 16, max_age: int = 65) -> bool:
+def matches_age_criteria(
+    candidate_age: Optional[int], min_age: int = 16, max_age: int = 65
+) -> bool:
     if candidate_age is None:
         return True
     return min_age <= candidate_age <= max_age
 
 
-def matches_gender_criteria(candidate_gender: Optional[str], allow_male: bool, allow_female: bool) -> bool:
+def matches_gender_criteria(
+    candidate_gender: Optional[str], allow_male: bool, allow_female: bool
+) -> bool:
     if not allow_male and not allow_female:
         return True
     if not candidate_gender:
@@ -54,7 +68,11 @@ def matches_gender_criteria(candidate_gender: Optional[str], allow_male: bool, a
 
 
 def matches_military_status(candidate_status: Optional[str], allowed_statuses: List[str]) -> bool:
-    if not allowed_statuses or "Farketmez" in allowed_statuses or "farketmez" in [s.lower() for s in allowed_statuses]:
+    if (
+        not allowed_statuses
+        or "Farketmez" in allowed_statuses
+        or "farketmez" in [s.lower() for s in allowed_statuses]
+    ):
         return True
     if not candidate_status:
         return False
@@ -64,7 +82,9 @@ def matches_military_status(candidate_status: Optional[str], allowed_statuses: L
     return any(allowed in norm_candidate for allowed in norm_allowed)
 
 
-def matches_language_level(candidate_level: Optional[str], required_min_level: Optional[str]) -> bool:
+def matches_language_level(
+    candidate_level: Optional[str], required_min_level: Optional[str]
+) -> bool:
     if not required_min_level:
         return True
     if not candidate_level:
@@ -91,7 +111,7 @@ def evaluate_candidate_filters(candidate: Dict[str, Any], filters: Dict[str, Any
     if not matches_gender_criteria(
         candidate.get("gender"),
         gender_filter.get("male", False),
-        gender_filter.get("female", False)
+        gender_filter.get("female", False),
     ):
         return False
 
