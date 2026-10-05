@@ -36,7 +36,7 @@
         "playwright>=1.42.0",
         "requests~=2.32.3",
         "curl_cffi~=0.10.0",
-        "pycryptodome~=3.21.0",
+        "pycryptodome>=3.21,<3.24",
         "aiohttp>=3.9.0",
         "sentry-sdk[fastapi,flask]>=2.0.0",
         "opencv-python~=4.10.0.84",
