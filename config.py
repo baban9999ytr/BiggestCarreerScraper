@@ -4,6 +4,7 @@ import argparse
 import logging
 from pathlib import Path
 from typing import Any
+
 from app.core.config import settings
 
 logging.basicConfig(
@@ -12,7 +13,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger("kariyer_api")
 
-parser = argparse.ArgumentParser(description="Kariyer.net Enterprise API / Playwright Automation")
+parser = argparse.ArgumentParser(
+    description="Kariyer.net Enterprise API / Playwright Automation"
+)
 parser.add_argument(
     "--autosolvetester",
     "--test",

@@ -77,7 +77,10 @@ async def ws_require_session(ws: WebSocket, token: str) -> dict | None:
             logger.warning("WS rejected: malformed expires_at field (token redacted)")
             return None
 
-    valid_statuses: frozenset[str] = frozenset(ACTIVE_LOGIN_STATES) | {"success", "authenticated"}
+    valid_statuses: frozenset[str] = frozenset(ACTIVE_LOGIN_STATES) | {
+        "success",
+        "authenticated",
+    }
     status_val = session.get("status", "")
     if status_val not in valid_statuses:
         await ws.close(code=_WS_CLOSE_UNAUTHORIZED)

@@ -3,11 +3,11 @@ name: Check OpenAPI Spec Sync
 on:
   pull_request:
     paths:
-      - 'main.py'
-      - 'schemas.py'
-      - 'models.py'
-      - 'export_openapi.py'
-      - 'openapi.json'
+      - "main.py"
+      - "schemas.py"
+      - "models.py"
+      - "export_openapi.py"
+      - "openapi.json"
 
 jobs:
   check-spec:
@@ -18,8 +18,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
 
       - name: Install dependencies
         run: |

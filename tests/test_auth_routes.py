@@ -25,7 +25,9 @@ async def test_login_validation_rejects_empty_payload(client):
 
 @pytest.mark.asyncio
 async def test_login_validation_rejects_short_email(client):
-    response = await client.post("/login", json={"email": "a", "password": "valid_password"})
+    response = await client.post(
+        "/login", json={"email": "a", "password": "valid_password"}
+    )
     assert response.status_code == 422
 
 

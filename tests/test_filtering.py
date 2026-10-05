@@ -24,9 +24,13 @@ def test_matches_age_criteria():
 
 def test_matches_gender_criteria():
     assert matches_gender_criteria("Erkek", allow_male=True, allow_female=False) is True
-    assert matches_gender_criteria("Kadın", allow_male=True, allow_female=False) is False
+    assert (
+        matches_gender_criteria("Kadın", allow_male=True, allow_female=False) is False
+    )
     assert matches_gender_criteria("Kadın", allow_male=False, allow_female=True) is True
-    assert matches_gender_criteria("Erkek", allow_male=False, allow_female=False) is True
+    assert (
+        matches_gender_criteria("Erkek", allow_male=False, allow_female=False) is True
+    )
 
 
 def test_matches_military_status():

@@ -34,7 +34,9 @@ try:
     from geeked import Geeked
 except ImportError as e:
     Geeked = None
-    logging.getLogger("main").warning("GeekedTest not found. Auto-captcha disabled: %s", e)
+    logging.getLogger("main").warning(
+        "GeekedTest not found. Auto-captcha disabled: %s", e
+    )
 
 
 def aid(element_id: str) -> str:
@@ -232,7 +234,12 @@ async def read_login_error(page: Page) -> Optional[str]:
         ):
             if marker.lower() in body.lower():
                 line = next(
-                    (x.strip() for x in body.splitlines() if marker.lower() in x.lower()), marker
+                    (
+                        x.strip()
+                        for x in body.splitlines()
+                        if marker.lower() in x.lower()
+                    ),
+                    marker,
                 )
                 return re.sub(r"\s+", " ", line)
     except Exception:
@@ -268,12 +275,10 @@ async def is_user_logged_in(page: Page) -> bool:
 
 async def click_left_corner_to_dismiss_overlay(page: Page) -> None:
     try:
-        viewport = await page.evaluate(
-            """() => ({
+        viewport = await page.evaluate("""() => ({
                 width: window.innerWidth,
                 height: window.innerHeight
-            })"""
-        )
+            })""")
 
         width = int(viewport["width"])
         height = int(viewport["height"])
@@ -430,11 +435,15 @@ async def classify_screen(page: Page) -> str:
 
 async def save_debug_artifacts(page: Page, s: dict[str, Any], label: str) -> None:
     safe = re.sub(r"[^a-zA-Z0-9_.-]+", "_", label).strip("_") or "debug"
-    stem = f"{s['token']}_{safe}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+    stem = (
+        f"{s['token']}_{safe}_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+    )
     screenshot_path = os.path.join(DEBUG_DIR, f"{stem}.jpg")
     html_path = os.path.join(DEBUG_DIR, f"{stem}.html")
     try:
-        await page.screenshot(path=screenshot_path, type="jpeg", quality=70, full_page=True)
+        await page.screenshot(
+            path=screenshot_path, type="jpeg", quality=70, full_page=True
+        )
     except Exception:
         screenshot_path = ""
     try:
@@ -462,7 +471,10 @@ async def wait_login_outcome(page: Page, s: dict[str, Any], timeout: float = 60)
             s["2fa_card"] = await detect_2fa_card(page)
         if kind != last_kind:
             logger.info(
-                "Screen classified as %s url=%s card=%s", kind, s.get("last_url"), s.get("2fa_card")
+                "Screen classified as %s url=%s card=%s",
+                kind,
+                s.get("last_url"),
+                s.get("2fa_card"),
             )
             last_kind = kind
         if kind == "2fa":
@@ -556,11 +568,16 @@ async def force_click_element(page: Page, locator: Any) -> bool:
         return True
     except Exception as e:
         logger.warning(
-            "Playwright click failed, executing JavaScript DOM force-click fallback: %s", e
+            "Playwright click failed, executing JavaScript DOM force-click fallback: %s",
+            e,
         )
 
     try:
-        handle = await locator.element_handle() if hasattr(locator, "element_handle") else locator
+        handle = (
+            await locator.element_handle()
+            if hasattr(locator, "element_handle")
+            else locator
+        )
         if handle:
             await handle.evaluate("""(el) => {
                     el.removeAttribute('disabled');
@@ -673,13 +690,17 @@ async def switch_2fa_channel(page: Page, method: str) -> bool:
     if channel is None or channel == method:
         return False
     if method == "sms":
-        clicked = await click_in_visible_card(page, "a", _SMS_SWITCH_LABELS, exact=False)
+        clicked = await click_in_visible_card(
+            page, "a", _SMS_SWITCH_LABELS, exact=False
+        )
         if clicked.get("ok"):
             await wait_for_card(page, "sms_send", timeout=8)
             return True
         return False
     if method == "email":
-        clicked = await click_in_visible_card(page, "a", _EMAIL_SWITCH_LABELS, exact=False)
+        clicked = await click_in_visible_card(
+            page, "a", _EMAIL_SWITCH_LABELS, exact=False
+        )
         if clicked.get("ok"):
             await wait_for_card(page, "email_send", timeout=8)
             return True
@@ -758,9 +779,13 @@ async def do_2fa(page: Page, s: dict[str, Any]) -> bool:
 
         if s.get("2fa_resend"):
             s["2fa_resend"] = False
-            clicked = await click_in_visible_card(page, "a", _RESEND_LABELS, exact=False)
+            clicked = await click_in_visible_card(
+                page, "a", _RESEND_LABELS, exact=False
+            )
             if not clicked.get("ok"):
-                await click_in_visible_card(page, "button", _SEND_CODE_LABELS, exact=False)
+                await click_in_visible_card(
+                    page, "button", _SEND_CODE_LABELS, exact=False
+                )
             s["2fa_code"] = None
             last_consumed_code = None
             s["status"] = "waiting_for_2fa_code"
@@ -768,14 +793,19 @@ async def do_2fa(page: Page, s: dict[str, Any]) -> bool:
             await wait_for_card(page, "code_entry", timeout=12)
             continue
 
-        if card in ("email_send", "sms_send", None) and card not in ("code_entry", "devam_et"):
+        if card in ("email_send", "sms_send", None) and card not in (
+            "code_entry",
+            "devam_et",
+        ):
             s["status"] = "waiting_for_2fa_choice"
             if method not in ("email", "sms"):
                 await asyncio.sleep(0.25)
                 continue
             if await switch_2fa_channel(page, method):
                 continue
-            clicked = await click_in_visible_card(page, "button", _SEND_CODE_LABELS, exact=False)
+            clicked = await click_in_visible_card(
+                page, "button", _SEND_CODE_LABELS, exact=False
+            )
             if clicked.get("ok"):
                 await wait_for_card(page, "code_entry", timeout=12)
             else:
@@ -951,7 +981,11 @@ async def hold_for_post_login(
 
 
 async def handle_login_and_verification(
-    token: str, email: str, password: str, keep_alive: bool = True, testerhtml: bool = False
+    token: str,
+    email: str,
+    password: str,
+    keep_alive: bool = True,
+    testerhtml: bool = False,
 ) -> None:
     s = SESSIONS[token]
     pw = browser = context = None
@@ -1016,7 +1050,11 @@ async def handle_login_and_verification(
             s["status"] = "failed"
             if not s.get("error"):
                 s["error"] = "Login was rejected."
-        elif outcome == "2fa" or url_implies_2fa(page_url(page)) or await twofa_visible(page):
+        elif (
+            outcome == "2fa"
+            or url_implies_2fa(page_url(page))
+            or await twofa_visible(page)
+        ):
             s["status"] = (
                 "waiting_for_2fa_code"
                 if s.get("2fa_card") == "code_entry"
@@ -1024,7 +1062,9 @@ async def handle_login_and_verification(
             )
         else:
             s["status"] = (
-                s.get("status") if s.get("status") in ACTIVE_LOGIN_STATES else "logging_in"
+                s.get("status")
+                if s.get("status") in ACTIVE_LOGIN_STATES
+                else "logging_in"
             )
 
         if keep_alive:
@@ -1058,7 +1098,9 @@ def calculate_slider_offset_local(bg_bytes: bytes, slice_bytes: bytes) -> float:
             if res and "target" in res:
                 return float(res["target"][0])
         except Exception as e:
-            logger.warning("[GEETEST] ddddocr match failed, falling back to OpenCV: %s", e)
+            logger.warning(
+                "[GEETEST] ddddocr match failed, falling back to OpenCV: %s", e
+            )
 
     bg_img = cv2.imdecode(np.frombuffer(bg_bytes, np.uint8), cv2.IMREAD_COLOR)
     slice_img = cv2.imdecode(np.frombuffer(slice_bytes, np.uint8), cv2.IMREAD_COLOR)
@@ -1149,8 +1191,7 @@ async def auto_solve_and_submit(page: Page) -> bool:
 
 async def dismiss_overlays(page: Page) -> None:
     try:
-        await page.add_style_tag(
-            content="""
+        await page.add_style_tag(content="""
             /* Hide modal backdrops, promo wheels, campaign popups, and banners */
             .modal-backdrop, 
             .modal.show, 
@@ -1166,7 +1207,6 @@ async def dismiss_overlays(page: Page) -> None:
             body { 
                 overflow: auto !important; 
             }
-        """
-        )
+        """)
     except Exception as e:
         logger.debug("Overlay CSS injection skipped: %s", e)

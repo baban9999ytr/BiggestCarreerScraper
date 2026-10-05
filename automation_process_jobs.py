@@ -699,7 +699,9 @@ async def install_overlay_killer(context: Any) -> None:
         logger.warning("Failed to install overlay killer: %s", e)
 
 
-async def _wait_for_selector_resilient(page: Page, selector: str, timeout: float = 25.0) -> bool:
+async def _wait_for_selector_resilient(
+    page: Page, selector: str, timeout: float = 25.0
+) -> bool:
     deadline = asyncio.get_running_loop().time() + timeout
     while asyncio.get_running_loop().time() < deadline:
         try:
@@ -722,7 +724,9 @@ async def _wait_for_selector_resilient(page: Page, selector: str, timeout: float
         return False
 
 
-async def _safe_goto(page: Page, url: str, ready: str = "", timeout: float = 20.0) -> None:
+async def _safe_goto(
+    page: Page, url: str, ready: str = "", timeout: float = 20.0
+) -> None:
     await dismiss_overlays(page)
     try:
         await page.goto(url, wait_until="domcontentloaded", timeout=int(timeout * 1000))
@@ -745,7 +749,9 @@ async def hydrate_wizard_steps(page: Page) -> None:
     await clear_blocking_popups(page)
     ok = await _wait_for_selector_resilient(page, _WIZARD_READY_SELECTOR, timeout=20.0)
     if not ok:
-        logger.warning("Wizard fields not visible yet; will still try stepper + extract.")
+        logger.warning(
+            "Wizard fields not visible yet; will still try stepper + extract."
+        )
     try:
         await page.evaluate(_UNHIDE_WIZARD_JS)
     except Exception:
@@ -816,13 +822,14 @@ async def extract_wizard_job_details(page: Page) -> Dict[str, Any]:
         data["ilan_basligi"] = await _live_input(page, "#titleFormInput")
     if not data.get("referans_no"):
         data["referans_no"] = await _live_input(page, "#jobCodeFormInput")
-    logger.warning("Wizard extract finished without a strong signal; returning last payload.")
+    logger.warning(
+        "Wizard extract finished without a strong signal; returning last payload."
+    )
     return _public_wizard(data if isinstance(data, dict) else {})
 
 
 async def extract_candidate_cv_detail(page: Page) -> Dict[str, Any]:
-    return await page.evaluate(
-        r"""() => {
+    return await page.evaluate(r"""() => {
             const t = el => (el?.textContent || el?.innerText || '').replace(/\s+/g, ' ').trim();
             return {
                 extracted_at: new Date().toISOString(),
@@ -842,8 +849,7 @@ async def extract_candidate_cv_detail(page: Page) -> Dict[str, Any]:
                     years: t(edu.querySelector('.year')),
                 }))
             };
-        }"""
-    )
+        }""")
 
 
 async def extract_job_card_metadata(card_locator: Locator) -> Dict[str, Any]:
@@ -907,8 +913,7 @@ async def clear_blocking_popups(page: Page) -> None:
 
 async def dismiss_overlays(page: Page) -> None:
     try:
-        await page.add_style_tag(
-            content="""
+        await page.add_style_tag(content="""
             .modal-backdrop, .mfp-bg, .mfp-wrap,
             [class*="wis-mfp-content"], #wis-lightbox,
             div[class*="wis-offer-counter-reminder"],
@@ -919,8 +924,7 @@ async def dismiss_overlays(page: Page) -> None:
                 pointer-events: none !important;
             }
             body, html { overflow: auto !important; }
-        """
-        )
+        """)
     except Exception as e:
         logger.debug("Overlay CSS injection skipped: %s", e)
 
@@ -974,7 +978,9 @@ async def _extract_candidates_from(
             pass
 
     if not loaded:
-        logger.info("Candidate elements not immediately visible; performing resilient wait...")
+        logger.info(
+            "Candidate elements not immediately visible; performing resilient wait..."
+        )
         for sel in candidate_container_selectors:
             if await _wait_for_selector_resilient(target, sel, timeout=4.0):
                 loaded = True
@@ -991,12 +997,16 @@ async def _extract_candidates_from(
     empty_pages = 0
     while True:
         remaining_limit = (
-            (max_candidates - len(all_candidates)) if max_candidates is not None else None
+            (max_candidates - len(all_candidates))
+            if max_candidates is not None
+            else None
         )
 
         page_candidates: List[Dict[str, Any]] = []
         try:
-            raw = await target.evaluate(_EXTRACT_CANDIDATES_MULTI_FALLBACK_JS, remaining_limit)
+            raw = await target.evaluate(
+                _EXTRACT_CANDIDATES_MULTI_FALLBACK_JS, remaining_limit
+            )
             if isinstance(raw, list):
                 page_candidates = raw
         except Exception as e:
@@ -1015,19 +1025,24 @@ async def _extract_candidates_from(
             if key in seen_keys:
                 continue
             seen_keys.add(key)
-            all_candidates.append({"name": name, "title": title, "detail_url": detail_url})
+            all_candidates.append(
+                {"name": name, "title": title, "detail_url": detail_url}
+            )
             added += 1
 
         if not added:
             empty_pages += 1
-            logger.warning("No new candidate records harvested on current pagination view.")
+            logger.warning(
+                "No new candidate records harvested on current pagination view."
+            )
         else:
             empty_pages = 0
 
         if max_candidates is not None and len(all_candidates) >= max_candidates:
             all_candidates = all_candidates[:max_candidates]
             logger.info(
-                "Reached candidate limit (%d candidates). Stopping pagination.", max_candidates
+                "Reached candidate limit (%d candidates). Stopping pagination.",
+                max_candidates,
             )
             break
 
@@ -1044,7 +1059,8 @@ async def _extract_candidates_from(
         class_attr = await next_btn.get_attribute("class") or ""
         if "disabled" in class_attr:
             logger.info(
-                "Reached final candidate page (%d candidates extracted).", len(all_candidates)
+                "Reached final candidate page (%d candidates extracted).",
+                len(all_candidates),
             )
             break
 
@@ -1075,7 +1091,9 @@ def _backfill_from_card(record: Dict[str, Any]) -> Dict[str, Any]:
     return record
 
 
-async def _collect_listing_jobs(page: Page, route: str, limit: int) -> List[Dict[str, Any]]:
+async def _collect_listing_jobs(
+    page: Page, route: str, limit: int
+) -> List[Dict[str, Any]]:
     jobs: List[Dict[str, Any]] = []
     base_tab_url = f"{ATS_ORIGIN}{route}"
     logger.info("Navigating to category tab: %s", route)
@@ -1142,14 +1160,21 @@ async def _extract_candidates_for_job(
             timeout=20.0,
         )
         opened = (
-            "/basvuru-listesi" in (page.url or "") or await page.locator(".resume-card").count() > 0
+            "/basvuru-listesi" in (page.url or "")
+            or await page.locator(".resume-card").count() > 0
         )
 
     if not opened and listing_url and card_index is not None:
         try:
-            await _safe_goto(page, listing_url, ".wide-card.job-card, .job-card", timeout=15.0)
-            card = page.locator(".wide-card.job-card, .job-card.wide-card").nth(card_index)
-            toggle = card.locator(".dropdown-toggle-split, button[data-toggle='dropdown']").first
+            await _safe_goto(
+                page, listing_url, ".wide-card.job-card, .job-card", timeout=15.0
+            )
+            card = page.locator(".wide-card.job-card, .job-card.wide-card").nth(
+                card_index
+            )
+            toggle = card.locator(
+                ".dropdown-toggle-split, button[data-toggle='dropdown']"
+            ).first
             if await toggle.count():
                 await toggle.click(force=True, timeout=2000)
                 await page.wait_for_timeout(350)
@@ -1177,7 +1202,9 @@ async def _extract_wizard_for_job(
 ) -> Dict[str, Any]:
     opened = False
     if job_id:
-        await _safe_goto(page, _wizard_url(job_id, job_type), _WIZARD_READY_SELECTOR, timeout=20.0)
+        await _safe_goto(
+            page, _wizard_url(job_id, job_type), _WIZARD_READY_SELECTOR, timeout=20.0
+        )
         opened = (
             "/ilan/detay/" in (page.url or "")
             or await page.locator(".new-jobpage").count() > 0
@@ -1186,8 +1213,12 @@ async def _extract_wizard_for_job(
 
     if not opened and listing_url and card_index is not None:
         try:
-            await _safe_goto(page, listing_url, ".wide-card.job-card, .job-card", timeout=15.0)
-            card = page.locator(".wide-card.job-card, .job-card.wide-card").nth(card_index)
+            await _safe_goto(
+                page, listing_url, ".wide-card.job-card, .job-card", timeout=15.0
+            )
+            card = page.locator(".wide-card.job-card, .job-card.wide-card").nth(
+                card_index
+            )
             edit_btn = card.locator("button[name='editAdd']").first
             await edit_btn.click(force=True, timeout=2500)
             await page.wait_for_load_state("domcontentloaded")
@@ -1254,7 +1285,9 @@ async def process_jobs_task(
                 record["candidates"] = await _extract_candidates_from(
                     page, max_candidates=max_candidates_per_job
                 )
-                wizard_data = await _extract_wizard_for_job(page, job_id_on_page, "active")
+                wizard_data = await _extract_wizard_for_job(
+                    page, job_id_on_page, "active"
+                )
                 record = _merge_filled(record, wizard_data)
             else:
                 wizard_data = await extract_wizard_job_details(page)
@@ -1264,7 +1297,9 @@ async def process_jobs_task(
                         page, job_id_on_page, filters, max_candidates_per_job
                     )
             if not record.get("title"):
-                record["title"] = record.get("ilan_basligi") or record.get("pozisyon") or ""
+                record["title"] = (
+                    record.get("ilan_basligi") or record.get("pozisyon") or ""
+                )
             if not record.get("reference_number"):
                 record["reference_number"] = record.get("referans_no") or ""
             if not record.get("company"):
@@ -1313,7 +1348,9 @@ async def process_jobs_task(
                         card_index=idx,
                     )
                 except Exception as e:
-                    logger.warning("Candidate extraction failed for job %s: %s", job_id, e)
+                    logger.warning(
+                        "Candidate extraction failed for job %s: %s", job_id, e
+                    )
 
                 try:
                     wizard_data = await _extract_wizard_for_job(
@@ -1330,7 +1367,8 @@ async def process_jobs_task(
                 jobs_processed.append(_backfill_from_card(job_record))
 
         logger.info(
-            "Job processing finished. Total extracted across categories: %d", len(jobs_processed)
+            "Job processing finished. Total extracted across categories: %d",
+            len(jobs_processed),
         )
         return jobs_processed
 
@@ -1378,7 +1416,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             try:
                 panel = page.locator(f"#{panel_id}").first
                 if not await panel.is_visible(timeout=1000):
-                    logger.info("Opening filter panel: %s (#%s)", header_title, panel_id)
+                    logger.info(
+                        "Opening filter panel: %s (#%s)", header_title, panel_id
+                    )
 
                     header = (
                         page.locator(f"#{panel_id}")
@@ -1389,7 +1429,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
                     )
 
                     if not await header.is_visible(timeout=1000):
-                        header = page.locator("div.filter-collapse", has_text=header_title).first
+                        header = page.locator(
+                            "div.filter-collapse", has_text=header_title
+                        ).first
 
                     if await header.is_visible(timeout=1000):
                         await header.click(force=True)
@@ -1413,7 +1455,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
                     await inp.fill(str(item))
                     await page.wait_for_timeout(400)
 
-                    opt = container.locator(".multiselect__option", has_text=str(item)).first
+                    opt = container.locator(
+                        ".multiselect__option", has_text=str(item)
+                    ).first
                     if await opt.is_visible(timeout=1500):
                         await opt.click(force=True)
                     else:
@@ -1448,7 +1492,10 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             if gender.get("male"):
                 try:
                     chk = page.locator("input[name='man']").first
-                    if await chk.is_visible(timeout=1000) and not await chk.is_checked():
+                    if (
+                        await chk.is_visible(timeout=1000)
+                        and not await chk.is_checked()
+                    ):
                         await chk.check(force=True)
                 except Exception:
                     pass
@@ -1456,7 +1503,10 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             if gender.get("female"):
                 try:
                     chk = page.locator("input[name='woman']").first
-                    if await chk.is_visible(timeout=1000) and not await chk.is_checked():
+                    if (
+                        await chk.is_visible(timeout=1000)
+                        and not await chk.is_checked()
+                    ):
                         await chk.check(force=True)
                 except Exception:
                     pass
@@ -1480,10 +1530,14 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             langs = personal.get("languages", [])
             if langs:
                 lang_names = [
-                    l["language"] for l in langs if isinstance(l, dict) and l.get("language")
+                    l["language"]
+                    for l in langs
+                    if isinstance(l, dict) and l.get("language")
                 ]
                 await _fill_vue_multiselect(
-                    "div.multiselect[name='language']", "input.multiselect__input", lang_names
+                    "div.multiselect[name='language']",
+                    "input.multiselect__input",
+                    lang_names,
                 )
 
                 first_level = next(
@@ -1503,7 +1557,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
 
             if personal.get("is_disabled_candidate"):
                 try:
-                    disabled_sw = page.locator(".equality-filter input[type='checkbox']").first
+                    disabled_sw = page.locator(
+                        ".equality-filter input[type='checkbox']"
+                    ).first
                     if (
                         await disabled_sw.is_visible(timeout=1000)
                         and not await disabled_sw.is_checked()
@@ -1514,7 +1570,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
 
             if personal.get("is_disaster_affected"):
                 try:
-                    disaster_sw = page.locator(".ug-filter-disaster input[type='checkbox']").first
+                    disaster_sw = page.locator(
+                        ".ug-filter-disaster input[type='checkbox']"
+                    ).first
                     if (
                         await disaster_sw.is_visible(timeout=1000)
                         and not await disaster_sw.is_checked()
@@ -1527,7 +1585,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
         if education:
             await _ensure_panel_open(*ACCORDION_PANELS["education"])
             await _fill_vue_multiselect(
-                "#educationLevel", "#educationLevelFormInput", education.get("levels", [])
+                "#educationLevel",
+                "#educationLevelFormInput",
+                education.get("levels", []),
             )
             await _fill_vue_multiselect(
                 "div.multiselect[name='university']",
@@ -1546,7 +1606,9 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             if exp_type in ["inexperienced", "experienced"]:
                 try:
                     val_idx = "1" if exp_type == "inexperienced" else "2"
-                    radio = page.locator(f"input[name='radiosStacked'][value='{val_idx}']").first
+                    radio = page.locator(
+                        f"input[name='radiosStacked'][value='{val_idx}']"
+                    ).first
                     if await radio.is_visible(timeout=1000):
                         await radio.check(force=True)
                 except Exception:
@@ -1555,22 +1617,33 @@ async def apply_ats_form_filters(page: Page, filters: Dict[str, Any]):
             if exp.get("positions"):
                 try:
                     p_scope = exp.get("position_scope", "all_jobs")
-                    p_select = page.locator("#position").locator("..").locator("select.xs").first
+                    p_select = (
+                        page.locator("#position")
+                        .locator("..")
+                        .locator("select.xs")
+                        .first
+                    )
                     if await p_select.is_visible(timeout=1000):
                         await p_select.select_option(value=SCOPE_MAP.get(p_scope, "0"))
                 except Exception:
                     pass
-                await _fill_vue_multiselect("#position", "#positionFormInput", exp["positions"])
+                await _fill_vue_multiselect(
+                    "#position", "#positionFormInput", exp["positions"]
+                )
 
             if exp.get("sectors"):
                 try:
                     s_scope = exp.get("sector_scope", "all_jobs")
-                    s_select = page.locator("#sector").locator("..").locator("select.xs").first
+                    s_select = (
+                        page.locator("#sector").locator("..").locator("select.xs").first
+                    )
                     if await s_select.is_visible(timeout=1000):
                         await s_select.select_option(value=SCOPE_MAP.get(s_scope, "0"))
                 except Exception:
                     pass
-                await _fill_vue_multiselect("#sector", "#sectorFormInput", exp["sectors"])
+                await _fill_vue_multiselect(
+                    "#sector", "#sectorFormInput", exp["sectors"]
+                )
 
             if exp.get("is_currently_working") is True:
                 try:
@@ -1632,7 +1705,9 @@ async def extract_and_send_jobs(
     logger.info("Sending extracted payload to %s...", target_api_url)
     async with aiohttp.ClientSession() as http_session:
         try:
-            async with http_session.post(target_api_url, json=payload, timeout=30) as resp:
+            async with http_session.post(
+                target_api_url, json=payload, timeout=30
+            ) as resp:
                 status_code = resp.status
                 response_text = await resp.text()
                 logger.info("POST request returned status: %d", status_code)

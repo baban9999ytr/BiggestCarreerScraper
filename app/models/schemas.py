@@ -25,19 +25,28 @@ class TokenOnly(BaseModel):
 
 
 class AgeRangeFilter(BaseModel):
-    min_age: Optional[int] = Field(default=16, ge=16, le=65, description="Minimum candidate age")
-    max_age: Optional[int] = Field(default=65, ge=16, le=65, description="Maximum candidate age")
+    min_age: Optional[int] = Field(
+        default=16, ge=16, le=65, description="Minimum candidate age"
+    )
+    max_age: Optional[int] = Field(
+        default=65, ge=16, le=65, description="Maximum candidate age"
+    )
 
 
 class GenderFilter(BaseModel):
     male: Optional[bool] = Field(default=False, description="Include male candidates")
-    female: Optional[bool] = Field(default=False, description="Include female candidates")
+    female: Optional[bool] = Field(
+        default=False, description="Include female candidates"
+    )
 
 
 class LanguageFilter(BaseModel):
-    language: Optional[str] = Field(None, description="Language name (e.g. 'İngilizce')")
+    language: Optional[str] = Field(
+        None, description="Language name (e.g. 'İngilizce')"
+    )
     min_level: Optional[str] = Field(
-        None, description="Options: 'Başlangıç', 'Temel', 'Orta', 'İyi', 'İleri', 'Anadil'"
+        None,
+        description="Options: 'Başlangıç', 'Temel', 'Orta', 'İyi', 'İleri', 'Anadil'",
     )
 
 
@@ -46,7 +55,9 @@ class PersonalInfoFilters(BaseModel):
     last_name: Optional[str] = Field(None, description="Soyad filter")
     age_range: Optional[AgeRangeFilter] = Field(default_factory=AgeRangeFilter)
     gender: Optional[GenderFilter] = Field(default_factory=GenderFilter)
-    nationality: Optional[List[str]] = Field(default_factory=list, description="Uyruk list")
+    nationality: Optional[List[str]] = Field(
+        default_factory=list, description="Uyruk list"
+    )
     military_status: Optional[List[str]] = Field(
         default_factory=list,
         description="Options: 'Farketmez', 'Yapıldı', 'Yapılmadı', 'Muaf', 'Tecilli'",
@@ -56,15 +67,21 @@ class PersonalInfoFilters(BaseModel):
         description="Options: 'A1', 'B', 'C', 'E', 'Uluslararası Sürücü Belgesi'",
     )
     languages: Optional[List[LanguageFilter]] = Field(default_factory=list)
-    is_disabled_candidate: Optional[bool] = Field(default=False, description="Engelli Aday toggle")
+    is_disabled_candidate: Optional[bool] = Field(
+        default=False, description="Engelli Aday toggle"
+    )
     is_disaster_affected: Optional[bool] = Field(
         default=False, description="Afetten Etkilenen Aday toggle"
     )
 
 
 class EducationFilters(BaseModel):
-    levels: Optional[List[str]] = Field(default_factory=list, description="Eğitim Seviyesi")
-    universities: Optional[List[str]] = Field(default_factory=list, description="Üniversite")
+    levels: Optional[List[str]] = Field(
+        default_factory=list, description="Eğitim Seviyesi"
+    )
+    universities: Optional[List[str]] = Field(
+        default_factory=list, description="Üniversite"
+    )
     departments: Optional[List[str]] = Field(default_factory=list, description="Bölüm")
 
 
@@ -72,21 +89,28 @@ class ExperienceDetailsFilters(BaseModel):
     experience_type: Optional[Literal["all", "inexperienced", "experienced"]] = Field(
         default="all", description="0: Tümü, 1: Tecrübesiz, 2: Tecrübeli"
     )
-    positions: Optional[List[str]] = Field(default_factory=list, description="Pozisyon listesi")
+    positions: Optional[List[str]] = Field(
+        default_factory=list, description="Pozisyon listesi"
+    )
     position_scope: Optional[Literal["all_jobs", "last_job", "last_3_jobs"]] = Field(
         default="all_jobs", description="0: Tüm İş Tecrübesi, 1: Son İş, 2: Son 3 İş"
     )
     position_levels: Optional[List[str]] = Field(
-        default_factory=list, description="Pozisyon Seviyesi (e.g. 'Uzman', 'Stajyer', 'Mavi yaka')"
+        default_factory=list,
+        description="Pozisyon Seviyesi (e.g. 'Uzman', 'Stajyer', 'Mavi yaka')",
     )
-    sectors: Optional[List[str]] = Field(default_factory=list, description="Sektör listesi")
+    sectors: Optional[List[str]] = Field(
+        default_factory=list, description="Sektör listesi"
+    )
     sector_scope: Optional[Literal["all_jobs", "last_job", "last_3_jobs"]] = Field(
         default="all_jobs", description="0: Tüm İş Tecrübesi, 1: Son İş, 2: Son 3 İş"
     )
     is_currently_working: Optional[bool] = Field(
         None, description="True: Çalışan, False: Çalışmayan"
     )
-    is_retired: Optional[bool] = Field(None, description="True: Emekli, False: Emekli Değil")
+    is_retired: Optional[bool] = Field(
+        None, description="True: Emekli, False: Emekli Değil"
+    )
 
 
 class LocationFilters(BaseModel):
@@ -133,21 +157,33 @@ class CandidateFilters(BaseModel):
     include_active: Optional[bool] = Field(default=True, description="Aktif İlanlar")
     include_passive: Optional[bool] = Field(default=False, description="Pasif İlanlar")
     include_drafts: Optional[bool] = Field(default=False, description="Taslak İlanlar")
-    include_archived: Optional[bool] = Field(default=False, description="Arşivlenen İlanlar")
-    include_offerings: Optional[bool] = Field(default=False, description="Teklif İlanları")
+    include_archived: Optional[bool] = Field(
+        default=False, description="Arşivlenen İlanlar"
+    )
+    include_offerings: Optional[bool] = Field(
+        default=False, description="Teklif İlanları"
+    )
 
     personal: Optional[PersonalInfoFilters] = Field(default_factory=PersonalInfoFilters)
     education: Optional[EducationFilters] = Field(default_factory=EducationFilters)
-    experience: Optional[ExperienceDetailsFilters] = Field(default_factory=ExperienceDetailsFilters)
+    experience: Optional[ExperienceDetailsFilters] = Field(
+        default_factory=ExperienceDetailsFilters
+    )
     location: Optional[LocationFilters] = Field(default_factory=LocationFilters)
-    application: Optional[ApplicationFilters] = Field(default_factory=ApplicationFilters)
+    application: Optional[ApplicationFilters] = Field(
+        default_factory=ApplicationFilters
+    )
     kvkk: Optional[KvkkFilters] = Field(default_factory=KvkkFilters)
-    review_status: Optional[ReviewStatusFilters] = Field(default_factory=ReviewStatusFilters)
+    review_status: Optional[ReviewStatusFilters] = Field(
+        default_factory=ReviewStatusFilters
+    )
 
 
 class ExportRequest(BaseModel):
     token: str = Field(..., description="Authentication session token")
-    limit: Optional[int] = Field(default=100, ge=1, le=5000, description="Max jobs to process")
+    limit: Optional[int] = Field(
+        default=100, ge=1, le=5000, description="Max jobs to process"
+    )
     max_candidates_per_job: Optional[int] = Field(
         default=None,
         ge=1,

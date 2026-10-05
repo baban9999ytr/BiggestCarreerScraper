@@ -33,12 +33,18 @@ class AppSettings(BaseSettings):
     )
 
     # Session & Automation Configuration
-    session_ttl_seconds: int = Field(default=21600, validation_alias="SESSION_TTL_SECONDS")
-    cv_scrape_delay_seconds: int = Field(default=30, validation_alias="CV_SCRAPE_DELAY_SECONDS")
+    session_ttl_seconds: int = Field(
+        default=21600, validation_alias="SESSION_TTL_SECONDS"
+    )
+    cv_scrape_delay_seconds: int = Field(
+        default=30, validation_alias="CV_SCRAPE_DELAY_SECONDS"
+    )
     chrome_path: Optional[str] = Field(default=None, validation_alias="CHROME_PATH")
 
     # Storage Directories
-    export_dir: Path = Field(default=ROOT_DIR / "exports", validation_alias="EXPORT_DIR")
+    export_dir: Path = Field(
+        default=ROOT_DIR / "exports", validation_alias="EXPORT_DIR"
+    )
     screenshot_dir: Path = Field(
         default=ROOT_DIR / "screenshots", validation_alias="SCREENSHOT_DIR"
     )
@@ -51,13 +57,17 @@ class AppSettings(BaseSettings):
     captcha_provider: CaptchaProvider = Field(
         default=CaptchaProvider.NONE, validation_alias="CAPTCHA_PROVIDER"
     )
-    captcha_api_key: Optional[str] = Field(default=None, validation_alias="CAPTCHA_API_KEY")
+    captcha_api_key: Optional[str] = Field(
+        default=None, validation_alias="CAPTCHA_API_KEY"
+    )
 
     allowed_origins: str = Field(default="", validation_alias="ALLOWED_ORIGINS")
 
     # Format: http://user:pass@host:port  or  http://host:port
     # Leave unset (default) to disable proxy.
-    outbound_proxy: Optional[str] = Field(default=None, validation_alias="OUTBOUND_PROXY")
+    outbound_proxy: Optional[str] = Field(
+        default=None, validation_alias="OUTBOUND_PROXY"
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -78,8 +88,12 @@ class AppSettings(BaseSettings):
         api_key = data.get("CAPTCHA_API_KEY") or os.getenv("CAPTCHA_API_KEY")
 
         if not provider or not api_key:
-            nocaptcha_key = data.get("NO_CAPTCHA_AI_KEY") or os.getenv("NO_CAPTCHA_AI_KEY")
-            capsolver_key = data.get("CAPSOLVER_API_KEY") or os.getenv("CAPSOLVER_API_KEY")
+            nocaptcha_key = data.get("NO_CAPTCHA_AI_KEY") or os.getenv(
+                "NO_CAPTCHA_AI_KEY"
+            )
+            capsolver_key = data.get("CAPSOLVER_API_KEY") or os.getenv(
+                "CAPSOLVER_API_KEY"
+            )
 
             if capsolver_key:
                 logger.warning(

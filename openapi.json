@@ -7,9 +7,7 @@
   "paths": {
     "/login": {
       "post": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Login",
         "operationId": "login_login_post",
         "requestBody": {
@@ -46,9 +44,7 @@
     },
     "/session-status/{token}": {
       "get": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Status",
         "operationId": "status_session_status__token__get",
         "parameters": [
@@ -86,9 +82,7 @@
     },
     "/stream-status/{token}": {
       "get": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Stream Status",
         "operationId": "stream_status_stream_status__token__get",
         "parameters": [
@@ -126,9 +120,7 @@
     },
     "/submit-2fa-choice": {
       "post": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Choose",
         "operationId": "choose_submit_2fa_choice_post",
         "requestBody": {
@@ -165,9 +157,7 @@
     },
     "/submit-2fa-code": {
       "post": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Code",
         "operationId": "code_submit_2fa_code_post",
         "requestBody": {
@@ -204,9 +194,7 @@
     },
     "/resend-2fa-code": {
       "post": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Resend 2Fa",
         "operationId": "resend_2fa_resend_2fa_code_post",
         "requestBody": {
@@ -243,9 +231,7 @@
     },
     "/close-session": {
       "post": {
-        "tags": [
-          "Authentication & WebSocket"
-        ],
+        "tags": ["Authentication & WebSocket"],
         "summary": "Close Session",
         "operationId": "close_session_close_session_post",
         "requestBody": {
@@ -282,9 +268,7 @@
     },
     "/process-candidate-details": {
       "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
+        "tags": ["Enterprise Automation API"],
         "summary": "Process Candidate Details",
         "operationId": "process_candidate_details_process_candidate_details_post",
         "requestBody": {
@@ -321,9 +305,7 @@
     },
     "/candidate-details-status/{token}": {
       "get": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
+        "tags": ["Enterprise Automation API"],
         "summary": "Candidate Details Status",
         "operationId": "candidate_details_status_candidate_details_status__token__get",
         "parameters": [
@@ -361,9 +343,7 @@
     },
     "/process-jobs": {
       "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
+        "tags": ["Enterprise Automation API"],
         "summary": "Process Jobs",
         "operationId": "process_jobs_process_jobs_post",
         "requestBody": {
@@ -400,9 +380,7 @@
     },
     "/trigger-supabaser": {
       "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
+        "tags": ["Enterprise Automation API"],
         "summary": "Trigger Supabaser",
         "operationId": "trigger_supabaser_trigger_supabaser_post",
         "responses": {
@@ -419,9 +397,7 @@
     },
     "/export-status/{token}": {
       "get": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
+        "tags": ["Enterprise Automation API"],
         "summary": "Export Status",
         "operationId": "export_status_export_status__token__get",
         "parameters": [
@@ -459,9 +435,7 @@
     },
     "/handle-jobs/{token}": {
       "post": {
-        "tags": [
-          "Enterprise Automation API"
-        ],
+        "tags": ["Enterprise Automation API"],
         "summary": "Handle Jobs Endpoint",
         "operationId": "handle_jobs_endpoint_handle_jobs__token__post",
         "parameters": [
@@ -509,9 +483,7 @@
     },
     "/": {
       "get": {
-        "tags": [
-          "System & Infrastructure"
-        ],
+        "tags": ["System & Infrastructure"],
         "summary": "Root",
         "operationId": "root__get",
         "responses": {
@@ -528,9 +500,7 @@
     },
     "/health": {
       "get": {
-        "tags": [
-          "System & Infrastructure"
-        ],
+        "tags": ["System & Infrastructure"],
         "summary": "Health Check",
         "operationId": "health_check_health_get",
         "responses": {
@@ -547,9 +517,7 @@
     },
     "/index": {
       "get": {
-        "tags": [
-          "System & Infrastructure"
-        ],
+        "tags": ["System & Infrastructure"],
         "summary": "Index",
         "operationId": "index_index_get",
         "responses": {
@@ -561,9 +529,7 @@
     },
     "/download-export/{token}/{filename}": {
       "get": {
-        "tags": [
-          "System & Infrastructure"
-        ],
+        "tags": ["System & Infrastructure"],
         "summary": "Download Export",
         "description": "Serve a generated export file for an authenticated session.\n\nSecurity:\n- Token must map to a known session (any non-expired state).\n- Filename is validated against a strict allowlist before any filesystem access.\n- Path-traversal is prevented by both the regex and Path.resolve() confinement.\n- Only .json and .csv files inside the exports directory are served.",
         "operationId": "download_export_download_export__token___filename__get",
@@ -911,11 +877,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "all",
-                  "inexperienced",
-                  "experienced"
-                ]
+                "enum": ["all", "inexperienced", "experienced"]
               },
               {
                 "type": "null"
@@ -944,11 +906,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "all_jobs",
-                  "last_job",
-                  "last_3_jobs"
-                ]
+                "enum": ["all_jobs", "last_job", "last_3_jobs"]
               },
               {
                 "type": "null"
@@ -992,11 +950,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "all_jobs",
-                  "last_job",
-                  "last_3_jobs"
-                ]
+                "enum": ["all_jobs", "last_job", "last_3_jobs"]
               },
               {
                 "type": "null"
@@ -1083,9 +1037,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token"
-        ],
+        "required": ["token"],
         "title": "ExportRequest"
       },
       "GenderFilter": {
@@ -1152,9 +1104,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "target_url"
-        ],
+        "required": ["target_url"],
         "title": "HandleJobsRequest"
       },
       "KvkkFilters": {
@@ -1269,10 +1219,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "title": "LoginCredentials"
       },
       "PersonalInfoFilters": {
@@ -1416,11 +1363,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "all",
-                  "show_reviewed",
-                  "hide_reviewed"
-                ]
+                "enum": ["all", "show_reviewed", "hide_reviewed"]
               },
               {
                 "type": "null"
@@ -1461,9 +1404,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token"
-        ],
+        "required": ["token"],
         "title": "TokenOnly"
       },
       "TwoFactorChoice": {
@@ -1478,10 +1419,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token",
-          "method"
-        ],
+        "required": ["token", "method"],
         "title": "TwoFactorChoice"
       },
       "TwoFactorSubmission": {
@@ -1498,10 +1436,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "token",
-          "code"
-        ],
+        "required": ["token", "code"],
         "title": "TwoFactorSubmission"
       },
       "ValidationError": {
@@ -1537,11 +1472,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     }

@@ -1,10 +1,8 @@
 # Kariyer.net ATS Automation API
 
-
 [![Python Support](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![CI Status](https://github.com/baban9999ytr/pythongeneraljobscraper/actions/workflows/ci.yml/badge.svg)](https://github.com/baban9999ytr/PictureFormatter/actions/workflows/ci.yml)
-
 
 Kariyer.net ATS Automation API is a Python/FastAPI service that uses Playwright to sign in to the Kariyer.net employer ATS, handle CAPTCHA and two-factor authentication (2FA), inspect job listings, and export job and candidate data.
 
@@ -49,16 +47,16 @@ The current implementation should be treated as a development or internal-servic
 
 ## Tech stack
 
-| Area | Technology |
-| --- | --- |
-| Language | Python 3.10+ |
-| API | FastAPI, Uvicorn, Pydantic 2 |
-| Browser automation | Playwright with Chromium |
-| HTTP clients | `aiohttp`, `requests`, `curl_cffi` |
-| CAPTCHA/OCR | GeekedTest, OpenCV, NumPy, `ddddocr` |
-| Configuration | `pydantic-settings`, environment variables, `.env` file |
-| Persistence | Local JSON/CSV files, SQLite metadata store (`aiosqlite`), optional Supabase ingestion |
-| Frontend | Static HTML/JS dashboard served at `/index` from `public/index.html` |
+| Area               | Technology                                                                             |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Language           | Python 3.10+                                                                           |
+| API                | FastAPI, Uvicorn, Pydantic 2                                                           |
+| Browser automation | Playwright with Chromium                                                               |
+| HTTP clients       | `aiohttp`, `requests`, `curl_cffi`                                                     |
+| CAPTCHA/OCR        | GeekedTest, OpenCV, NumPy, `ddddocr`                                                   |
+| Configuration      | `pydantic-settings`, environment variables, `.env` file                                |
+| Persistence        | Local JSON/CSV files, SQLite metadata store (`aiosqlite`), optional Supabase ingestion |
+| Frontend           | Static HTML/JS dashboard served at `/index` from `public/index.html`                   |
 
 ## Prerequisites
 
@@ -178,26 +176,26 @@ All REST request bodies use JSON. Authenticated operations use a generated sessi
 
 ### Health and documentation
 
-| Method | Route | Description |
-| --- | --- | --- |
-| GET | `/` | Returns `{"status":"online"}` |
-| GET | `/health` | Returns `{"status":"healthy"}` |
-| GET | `/index` | Serves `public/index.html` browser UI |
-| GET | `/docs` | Swagger UI |
-| GET | `/redoc` | ReDoc API documentation |
-| GET | `/openapi.json` | OpenAPI schema |
+| Method | Route           | Description                           |
+| ------ | --------------- | ------------------------------------- |
+| GET    | `/`             | Returns `{"status":"online"}`         |
+| GET    | `/health`       | Returns `{"status":"healthy"}`        |
+| GET    | `/index`        | Serves `public/index.html` browser UI |
+| GET    | `/docs`         | Swagger UI                            |
+| GET    | `/redoc`        | ReDoc API documentation               |
+| GET    | `/openapi.json` | OpenAPI schema                        |
 
 ### Authentication and sessions
 
-| Method | Route | Description |
-| --- | --- | --- |
-| POST | `/login` | Starts a background Kariyer.net login session |
-| GET | `/session-status/{token}` | Retrieves the current session and login state |
-| GET | `/stream-status/{token}` | Streams public session-state updates through SSE |
-| POST | `/submit-2fa-choice` | Selects `email` or `sms` as the 2FA method |
-| POST | `/submit-2fa-code` | Submits a received 2FA code |
-| POST | `/resend-2fa-code` | Requests a new 2FA code |
-| POST | `/close-session` | Terminates the browser session |
+| Method | Route                     | Description                                      |
+| ------ | ------------------------- | ------------------------------------------------ |
+| POST   | `/login`                  | Starts a background Kariyer.net login session    |
+| GET    | `/session-status/{token}` | Retrieves the current session and login state    |
+| GET    | `/stream-status/{token}`  | Streams public session-state updates through SSE |
+| POST   | `/submit-2fa-choice`      | Selects `email` or `sms` as the 2FA method       |
+| POST   | `/submit-2fa-code`        | Submits a received 2FA code                      |
+| POST   | `/resend-2fa-code`        | Requests a new 2FA code                          |
+| POST   | `/close-session`          | Terminates the browser session                   |
 
 #### Start login
 
@@ -285,14 +283,14 @@ Content-Type: application/json
 
 ### Extraction and exports
 
-| Method | Route | Description |
-| --- | --- | --- |
-| POST | `/process-jobs` | Starts background job extraction |
-| GET | `/export-status/{token}` | Returns job-export progress and result metadata |
-| POST | `/process-candidate-details` | Starts candidate-detail extraction from the current ATS page |
-| GET | `/candidate-details-status/{token}` | Returns candidate extraction progress and metadata |
-| POST | `/handle-jobs/{token}` | Extracts jobs and posts the payload to a webhook URL |
-| GET | `/download-export/{token}/{filename}` | Securely serves a generated export file |
+| Method | Route                                 | Description                                                  |
+| ------ | ------------------------------------- | ------------------------------------------------------------ |
+| POST   | `/process-jobs`                       | Starts background job extraction                             |
+| GET    | `/export-status/{token}`              | Returns job-export progress and result metadata              |
+| POST   | `/process-candidate-details`          | Starts candidate-detail extraction from the current ATS page |
+| GET    | `/candidate-details-status/{token}`   | Returns candidate extraction progress and metadata           |
+| POST   | `/handle-jobs/{token}`                | Extracts jobs and posts the payload to a webhook URL         |
+| GET    | `/download-export/{token}/{filename}` | Securely serves a generated export file                      |
 
 #### Process jobs
 
@@ -417,6 +415,7 @@ Do not expose this endpoint without strong authentication and authorization.
 Navigate to `http://localhost:8000/index` (or `/?token=<uuid>` after login) to use the browser UI.
 
 **Login flow:**
+
 1. Enter your Kariyer.net employer email and password
 2. The UI polls `/stream-status/{token}` via SSE and transitions automatically through CAPTCHA, 2FA choice, and 2FA code states
 3. Once authenticated, a "Process Jobs?" button appears with a configurable limit field

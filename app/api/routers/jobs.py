@@ -29,7 +29,10 @@ class HandleJobsRequest(BaseModel):
         max_length=2048,
     )
     limit: int = Field(
-        default=10, ge=1, le=500, description="Maximum number of job listings to process."
+        default=10,
+        ge=1,
+        le=500,
+        description="Maximum number of job listings to process.",
     )
 
 
@@ -50,9 +53,11 @@ def write_exports(token: str, jobs: List[Dict]) -> Dict[str, str]:
         for x in jobs:
             w.writerow(
                 {
-                    k: json.dumps(x[k], ensure_ascii=False)
-                    if isinstance(x.get(k), (list, dict))
-                    else x.get(k, "")
+                    k: (
+                        json.dumps(x[k], ensure_ascii=False)
+                        if isinstance(x.get(k), (list, dict))
+                        else x.get(k, "")
+                    )
                     for k in cols
                 }
             )
@@ -73,7 +78,8 @@ async def process_candidate_details(p: TokenOnly, tasks: BackgroundTasks):
 
     if s.get("is_processing_candidate_details"):
         raise HTTPException(
-            409, "A candidate details extraction task is already running for this session."
+            409,
+            "A candidate details extraction task is already running for this session.",
         )
 
     s["is_processing_candidate_details"] = True
@@ -82,7 +88,10 @@ async def process_candidate_details(p: TokenOnly, tasks: BackgroundTasks):
         try:
             async with s["lock"]:
                 out_path = await process_candidate_details_for_token(
-                    token=p.token, page=page, search_dir=EXPORT_DIR, output_dir=EXPORT_DIR
+                    token=p.token,
+                    page=page,
+                    search_dir=EXPORT_DIR,
+                    output_dir=EXPORT_DIR,
                 )
 
             if out_path:
@@ -98,7 +107,9 @@ async def process_candidate_details(p: TokenOnly, tasks: BackgroundTasks):
                 }
         except Exception as e:
             logger.exception(
-                "Background candidate details processing failed for token %s: %s", p.token, e
+                "Background candidate details processing failed for token %s: %s",
+                p.token,
+                e,
             )
             s["last_candidate_export_result"] = {"status": "failed", "error": str(e)}
         finally:
@@ -132,7 +143,9 @@ async def process_jobs(p: ExportRequest, tasks: BackgroundTasks):
         raise HTTPException(400, "Session is not ready or authenticated.")
 
     if s.get("is_processing_jobs"):
-        raise HTTPException(409, "A job processing task is already running for this session.")
+        raise HTTPException(
+            409, "A job processing task is already running for this session."
+        )
 
     s["is_processing_jobs"] = True
 
@@ -158,12 +171,16 @@ async def process_jobs(p: ExportRequest, tasks: BackgroundTasks):
 
             try:
                 await asyncio.to_thread(process_and_upload)
-                logger.info("Triggered supabaser process successfully for token %s", p.token)
+                logger.info(
+                    "Triggered supabaser process successfully for token %s", p.token
+                )
             except Exception as supa_err:
                 logger.error("Supabaser sync failed: %s", supa_err)
 
         except Exception as e:
-            logger.exception("Background job processing failed for token %s: %s", p.token, e)
+            logger.exception(
+                "Background job processing failed for token %s: %s", p.token, e
+            )
             s["last_export_result"] = {"status": "failed", "error": str(e)}
         finally:
             s["is_processing_jobs"] = False
@@ -180,7 +197,10 @@ async def process_jobs(p: ExportRequest, tasks: BackgroundTasks):
 @router.post("/trigger-supabaser")
 async def trigger_supabaser(tasks: BackgroundTasks):
     tasks.add_task(asyncio.to_thread, process_and_upload)
-    return {"status": "queued", "message": "Supabaser background processing task queued."}
+    return {
+        "status": "queued",
+        "message": "Supabaser background processing task queued.",
+    }
 
 
 @router.get("/export-status/{token}")
@@ -209,7 +229,9 @@ async def handle_jobs_endpoint(
     page = session_state.get("page")
 
     if not page or session_state.get("status") not in ("success", "authenticated"):
-        raise HTTPException(status_code=400, detail="Session not authenticated or page lost.")
+        raise HTTPException(
+            status_code=400, detail="Session not authenticated or page lost."
+        )
 
     background_tasks.add_task(
         extract_and_send_jobs, token, page, validated_url, req.limit, session_state

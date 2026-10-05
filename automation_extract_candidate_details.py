@@ -12,7 +12,9 @@ from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional
 
 from playwright.async_api import Page, async_playwright
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 logger = logging.getLogger("extract_candidate_details")
 
 BASE_URL = "https://ats.kariyer.net"
@@ -225,7 +227,9 @@ def save_cv_store(path: Path, store: Dict[str, Any]) -> None:
     store["updated_at"] = iso(utcnow())
     store["version"] = CACHE_VERSION
     store["cache_ttl_days"] = store.get("cache_ttl_days") or CACHE_TTL_DAYS
-    fd, tmp_name = tempfile.mkstemp(prefix="extracted_cvs.", suffix=".json", dir=str(path.parent))
+    fd, tmp_name = tempfile.mkstemp(
+        prefix="extracted_cvs.", suffix=".json", dir=str(path.parent)
+    )
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump(store, f, ensure_ascii=False, indent=2)
@@ -240,7 +244,9 @@ def save_cv_store(path: Path, store: Dict[str, Any]) -> None:
 
 
 def cv_is_fresh(
-    record: Optional[Dict[str, Any]], now: Optional[datetime] = None, ttl_days: int = CACHE_TTL_DAYS
+    record: Optional[Dict[str, Any]],
+    now: Optional[datetime] = None,
+    ttl_days: int = CACHE_TTL_DAYS,
 ) -> bool:
     if not record or not isinstance(record, dict):
         return False
@@ -315,7 +321,9 @@ async def reveal_contact_information(page: Page) -> None:
 
 
 async def scrape_candidate_cv(page: Page, detail_url: str) -> Dict[str, Any]:
-    target_url = f"{BASE_URL}{detail_url}" if str(detail_url).startswith("/") else detail_url
+    target_url = (
+        f"{BASE_URL}{detail_url}" if str(detail_url).startswith("/") else detail_url
+    )
     logger.info("Scraping Candidate CV: %s", target_url)
 
     try:
@@ -340,14 +348,18 @@ async def scrape_candidate_cv(page: Page, detail_url: str) -> Dict[str, Any]:
         for attempt in range(6):
             cv_data = await page.evaluate(_EXTRACT_CV_JS)
 
-            has_name = bool(cv_data.get("full_name") and str(cv_data.get("full_name")).strip())
+            has_name = bool(
+                cv_data.get("full_name") and str(cv_data.get("full_name")).strip()
+            )
             has_exp = bool(cv_data.get("experiences"))
             has_edu = bool(cv_data.get("education"))
 
             if has_name or has_exp or has_edu:
                 break
 
-            logger.warning("CV content still loading (skeleton) on attempt %d/6...", attempt + 1)
+            logger.warning(
+                "CV content still loading (skeleton) on attempt %d/6...", attempt + 1
+            )
             await page.wait_for_timeout(800)
 
         cv_data["source_url"] = target_url
@@ -356,26 +368,42 @@ async def scrape_candidate_cv(page: Page, detail_url: str) -> Dict[str, Any]:
 
     except Exception as err:
         logger.error("Failed to scrape CV at %s: %s", target_url, err)
-        return {"source_url": target_url, "error": str(err), "scraped_at": iso(utcnow())}
+        return {
+            "source_url": target_url,
+            "error": str(err),
+            "scraped_at": iso(utcnow()),
+        }
 
 
 async def _pace_after_live_scrape(delay_seconds: int) -> None:
     if delay_seconds <= 0:
         return
-    logger.info("Waiting %ss before the next live CV request (server load guard)...", delay_seconds)
+    logger.info(
+        "Waiting %ss before the next live CV request (server load guard)...",
+        delay_seconds,
+    )
     await asyncio.sleep(delay_seconds)
 
 
-def _ensure_job_entry(store: Dict[str, Any], job: Dict[str, Any], job_id: str) -> Dict[str, Any]:
+def _ensure_job_entry(
+    store: Dict[str, Any], job: Dict[str, Any], job_id: str
+) -> Dict[str, Any]:
     key = job_cache_key(job, job_id)
     jobs = store.setdefault("jobs", {})
     entry = jobs.get(key) or {}
     entry["job_id"] = job_id or entry.get("job_id") or key
     entry["reference_number"] = (
-        job.get("reference_number") or job.get("referans_no") or entry.get("reference_number") or ""
+        job.get("reference_number")
+        or job.get("referans_no")
+        or entry.get("reference_number")
+        or ""
     )
-    entry["title"] = job.get("title") or job.get("ilan_basligi") or entry.get("title") or ""
-    entry["company"] = job.get("company") or job.get("sirket_sayfasi") or entry.get("company") or ""
+    entry["title"] = (
+        job.get("title") or job.get("ilan_basligi") or entry.get("title") or ""
+    )
+    entry["company"] = (
+        job.get("company") or job.get("sirket_sayfasi") or entry.get("company") or ""
+    )
     entry.setdefault("applications", [])
     jobs[key] = entry
     return entry
@@ -388,7 +416,9 @@ def _upsert_application(job_entry: Dict[str, Any], app: Dict[str, Any]) -> None:
     url = app.get("detail_url") or ""
     for existing in apps:
         if (appl and existing.get("application_id") == appl) or (
-            cand and existing.get("candidate_id") == cand and existing.get("detail_url") == url
+            cand
+            and existing.get("candidate_id") == cand
+            and existing.get("detail_url") == url
         ):
             existing.update({k: v for k, v in app.items() if v})
             return
@@ -438,7 +468,9 @@ async def extract_cvs_for_jobs(
             if cand.get("detail_url"):
                 sample_url = cand["detail_url"]
                 break
-        parsed_job_id = parse_detail_ids(sample_url)["job_id"] or str(job.get("job_id") or "")
+        parsed_job_id = parse_detail_ids(sample_url)["job_id"] or str(
+            job.get("job_id") or ""
+        )
         job_entry = _ensure_job_entry(store, job, parsed_job_id)
         logger.info(
             "Job '%s' (id=%s ref=%s) — %d applicants",
@@ -598,13 +630,20 @@ async def main():
         description="Extract Kariyer.net ATS CVs with a 6-month cache."
     )
     parser.add_argument(
-        "token", nargs="?", default="", help="jobs file token (kariyer_jobs_{token}_*.json)"
+        "token",
+        nargs="?",
+        default="",
+        help="jobs file token (kariyer_jobs_{token}_*.json)",
     )
-    parser.add_argument("--jobs-json", dest="jobs_json", default="", help="explicit jobs JSON path")
+    parser.add_argument(
+        "--jobs-json", dest="jobs_json", default="", help="explicit jobs JSON path"
+    )
     parser.add_argument(
         "--cache", dest="cache", default=CACHE_FILENAME, help="extracted_cvs.json path"
     )
-    parser.add_argument("--delay", dest="delay", type=int, default=CV_SCRAPE_DELAY_SECONDS)
+    parser.add_argument(
+        "--delay", dest="delay", type=int, default=CV_SCRAPE_DELAY_SECONDS
+    )
     parser.add_argument(
         "--force", dest="force", action="store_true", help="ignore cache and re-scrape"
     )

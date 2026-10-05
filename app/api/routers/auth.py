@@ -3,13 +3,24 @@ import json
 import logging
 import os
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    HTTPException,
+    WebSocket,
+    WebSocketDisconnect,
+)
 from fastapi.responses import StreamingResponse
 
 from app.api.dependencies import require_session
 from app.core.config import settings
 from app.core.ws_auth import ws_require_session
-from app.models.schemas import LoginCredentials, TokenOnly, TwoFactorChoice, TwoFactorSubmission
+from app.models.schemas import (
+    LoginCredentials,
+    TokenOnly,
+    TwoFactorChoice,
+    TwoFactorSubmission,
+)
 from app.models.session import new_session, public
 from automation import handle_login_and_verification
 from config import ACTIVE_LOGIN_STATES, SESSIONS, args
@@ -18,7 +29,9 @@ logger = logging.getLogger("kariyer_api.auth")
 router = APIRouter()
 
 
-async def capture_2fa_post_submission_screenshots(token: str, duration_seconds: int = 60) -> None:
+async def capture_2fa_post_submission_screenshots(
+    token: str, duration_seconds: int = 60
+) -> None:
     session = SESSIONS.get(token)
     if not session:
         return
@@ -186,7 +199,9 @@ async def resend_2fa(p: TokenOnly):
     s["2fa_resend"] = True
     s["2fa_code"] = None
     s["error"] = None
-    logger.info("2FA resend requested (state was '%s', card=%s)", s["status"], s.get("2fa_card"))
+    logger.info(
+        "2FA resend requested (state was '%s', card=%s)", s["status"], s.get("2fa_card")
+    )
     return {"status": "accepted", "current_state": s["status"]}
 
 
@@ -228,7 +243,9 @@ async def livestream(ws: WebSocket, token: str):
                 y = m.get("y")
 
                 if action in ("click", "mousedown", "mousemove", "mouseup"):
-                    if not (isinstance(x, (int, float)) and isinstance(y, (int, float))):
+                    if not (
+                        isinstance(x, (int, float)) and isinstance(y, (int, float))
+                    ):
                         continue  # drop malformed coordinate messages
                     x = max(0.0, min(float(x), 4096.0))
                     y = max(0.0, min(float(y), 4096.0))

@@ -24,7 +24,9 @@ from config import SESSIONS, args
 setup_logging()
 logger = logging.getLogger("main")
 
-GEEKED_PATH = os.path.join(os.path.expanduser("~"), "Desktop", "LastRodeo", "GeekedTest")
+GEEKED_PATH = os.path.join(
+    os.path.expanduser("~"), "Desktop", "LastRodeo", "GeekedTest"
+)
 if os.path.exists(GEEKED_PATH):
     sys.path.append(GEEKED_PATH)
 
@@ -68,7 +70,9 @@ app.include_router(api_router)
 
 async def tester():
     if not settings.kariyer_email or not settings.kariyer_password:
-        raise RuntimeError("KARIYER_EMAIL and KARIYER_PASSWORD environment variables are required.")
+        raise RuntimeError(
+            "KARIYER_EMAIL and KARIYER_PASSWORD environment variables are required."
+        )
 
     t, s = new_session(settings.kariyer_email)
 
@@ -111,4 +115,4 @@ if __name__ == "__main__":
     if args.autosolvetester:
         asyncio.run(tester())
     else:
-        uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)# noqa: S104
+        uvicorn.run(app, host="0.0.0.0", port=8000, reload=False)  # noqa: S104

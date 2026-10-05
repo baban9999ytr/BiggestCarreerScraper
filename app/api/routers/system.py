@@ -52,7 +52,11 @@ async def download_export(token: str, filename: str):
     except ExportSecurityError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    media_type = "application/json" if filename.endswith(".json") else "text/csv; charset=utf-8-sig"
+    media_type = (
+        "application/json"
+        if filename.endswith(".json")
+        else "text/csv; charset=utf-8-sig"
+    )
     return FileResponse(
         path=str(file_path),
         media_type=media_type,

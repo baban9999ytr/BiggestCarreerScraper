@@ -67,7 +67,9 @@ def matches_gender_criteria(
     return False
 
 
-def matches_military_status(candidate_status: Optional[str], allowed_statuses: List[str]) -> bool:
+def matches_military_status(
+    candidate_status: Optional[str], allowed_statuses: List[str]
+) -> bool:
     if (
         not allowed_statuses
         or "Farketmez" in allowed_statuses
@@ -95,7 +97,9 @@ def matches_language_level(
     return c_rank >= req_rank
 
 
-def evaluate_candidate_filters(candidate: Dict[str, Any], filters: Dict[str, Any]) -> bool:
+def evaluate_candidate_filters(
+    candidate: Dict[str, Any], filters: Dict[str, Any]
+) -> bool:
     if not filters:
         return True
 

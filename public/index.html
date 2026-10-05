@@ -1,189 +1,288 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Güvenli Doğrulama Portalı</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #0f172a; 
-            color: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1.5rem;
-        }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #0f172a;
+        color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1.5rem;
+      }
 
-        .portal-wrapper {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 520px;
-            width: 100%;
-        }
+      .portal-wrapper {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 520px;
+        width: 100%;
+      }
 
-        .form-group { width: 100%; margin-bottom: 1rem; text-align: left; }
-        label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.4rem; font-weight: 500; }
-        input { 
-            width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid #334155; 
-            border-radius: 8px; color: #f8fafc; font-size: 0.95rem; outline: none; 
-            transition: border-color 0.2s;
-        }
-        input:focus { border-color: #6366f1; }
+      .form-group {
+        width: 100%;
+        margin-bottom: 1rem;
+        text-align: left;
+      }
+      label {
+        display: block;
+        font-size: 0.85rem;
+        color: #94a3b8;
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+      input {
+        width: 100%;
+        padding: 0.75rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        color: #f8fafc;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input:focus {
+        border-color: #6366f1;
+      }
 
-        .btn-submit { 
-            width: 100%; padding: 0.8rem; background-color: #6366f1; color: white; 
-            border: none; border-radius: 8px; font-weight: 600; cursor: pointer; margin-top: 0.5rem; 
-            transition: background-color 0.2s;
-        }
-        .btn-submit:hover { background-color: #4f46e5; }
-        .btn-submit:disabled { background-color: #475569; cursor: not-allowed; }
+      .btn-submit {
+        width: 100%;
+        padding: 0.8rem;
+        background-color: #6366f1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 0.5rem;
+        transition: background-color 0.2s;
+      }
+      .btn-submit:hover {
+        background-color: #4f46e5;
+      }
+      .btn-submit:disabled {
+        background-color: #475569;
+        cursor: not-allowed;
+      }
 
-        .btn-choice {
-            flex: 1; padding: 0.75rem; background-color: #334155; color: white; 
-            border: 1px solid #475569; border-radius: 8px; font-weight: 600; cursor: pointer;
-            transition: all 0.2s; font-size: 0.85rem;
-        }
-        .btn-choice:hover { background-color: #475569; border-color: #6366f1; }
+      .btn-choice {
+        flex: 1;
+        padding: 0.75rem;
+        background-color: #334155;
+        color: white;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+      }
+      .btn-choice:hover {
+        background-color: #475569;
+        border-color: #6366f1;
+      }
 
-        .status-box { text-align: center; padding: 1rem 0; color: #64748b; width: 100%; }
-        .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #334155; border-radius: 50%; border-top-color: #6366f1; animation: spin 1s linear infinite; margin-bottom: 1rem; }
-        
-        .browser-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            color: #4ade80;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
+      .status-box {
+        text-align: center;
+        padding: 1rem 0;
+        color: #64748b;
+        width: 100%;
+      }
+      .spinner {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        border: 3px solid #334155;
+        border-radius: 50%;
+        border-top-color: #6366f1;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
-            animation: pulse 2s infinite;
-        }
+      .browser-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f172a;
+        border: 1px solid #334155;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: #4ade80;
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
 
-        .status-dot.inactive {
-            background-color: #ef4444;
-            box-shadow: 0 0 8px #ef4444;
-            animation: none;
-        }
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #22c55e;
+        box-shadow: 0 0 8px #22c55e;
+        animation: pulse 2s infinite;
+      }
 
-        .dev-panel {
-            margin-top: 1.5rem;
-            width: 100%;
-            background: #0f172a;
-            border: 1px dashed #6366f1;
-            border-radius: 12px;
-            padding: 1rem;
-        }
-        .dev-title {
-            font-size: 0.8rem;
-            color: #818cf8;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 0.75rem;
-            text-align: center;
-            letter-spacing: 0.5px;
-        }
+      .status-dot.inactive {
+        background-color: #ef4444;
+        box-shadow: 0 0 8px #ef4444;
+        animation: none;
+      }
 
-        .json-response-box {
-            width: 100%;
-            background: #090d16;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-family: monospace;
-            font-size: 0.8rem;
-            color: #38bdf8;
-            max-height: 250px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            text-align: left;
-            margin-top: 0.75rem;
-        }
+      .dev-panel {
+        margin-top: 1.5rem;
+        width: 100%;
+        background: #0f172a;
+        border: 1px dashed #6366f1;
+        border-radius: 12px;
+        padding: 1rem;
+      }
+      .dev-title {
+        font-size: 0.8rem;
+        color: #818cf8;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        text-align: center;
+        letter-spacing: 0.5px;
+      }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+      .json-response-box {
+        width: 100%;
+        background: #090d16;
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: #38bdf8;
+        max-height: 250px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        text-align: left;
+        margin-top: 0.75rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
     </style>
-</head>
-<body>
-
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Güvenli Oturum Portalı</h1>
-    <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem;" id="portal-subtitle">Kariyer.net Kimlik Doğrulama</p>
+  </head>
+  <body>
+    <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem">
+      Güvenli Oturum Portalı
+    </h1>
+    <p
+      style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem"
+      id="portal-subtitle"
+    >
+      Kariyer.net Kimlik Doğrulama
+    </p>
 
     <!-- Playwright Backend Engine Status Indicator -->
-    <div class="browser-status-badge" id="browser-badge" style="display: none;">
-        <span class="status-dot" id="browser-dot"></span>
-        <span id="browser-status-text">Oturum Motoru Aktif</span>
+    <div class="browser-status-badge" id="browser-badge" style="display: none">
+      <span class="status-dot" id="browser-dot"></span>
+      <span id="browser-status-text">Oturum Motoru Aktif</span>
     </div>
 
     <div class="portal-wrapper">
-        <div id="portal-container" style="width: 100%;"></div>
+      <div id="portal-container" style="width: 100%"></div>
 
-        <!-- DIRECT ENDPOINT TEST CONTROLS -->
-        <div class="dev-panel" id="dev-panel" style="display: none;">
-            <div class="dev-title">🛠️ Direct 2FA Test Controls</div>
-            
-            <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem;">1. Select Method (/submit-2fa-choice):</p>
-            <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
-                <button onclick="submitChoice('email')" class="btn-choice">📧 Email</button>
-                <button onclick="submitChoice('sms')" class="btn-choice">📱 SMS</button>
-            </div>
+      <!-- DIRECT ENDPOINT TEST CONTROLS -->
+      <div class="dev-panel" id="dev-panel" style="display: none">
+        <div class="dev-title">🛠️ Direct 2FA Test Controls</div>
 
-            <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.4rem;">2. Submit Code (/submit-2fa-code):</p>
-            <div class="form-group" style="margin-bottom: 0.5rem;">
-                <input type="text" id="manual-2fa-code" placeholder="123456" maxlength="12" />
-            </div>
-            <button onclick="submitCode()" class="btn-submit" style="padding: 0.6rem; font-size: 0.85rem;">Send 2FA Code</button>
+        <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem">
+          1. Select Method (/submit-2fa-choice):
+        </p>
+        <div style="display: flex; gap: 8px; margin-bottom: 1rem">
+          <button onclick="submitChoice('email')" class="btn-choice">
+            📧 Email
+          </button>
+          <button onclick="submitChoice('sms')" class="btn-choice">
+            📱 SMS
+          </button>
         </div>
+
+        <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.4rem">
+          2. Submit Code (/submit-2fa-code):
+        </p>
+        <div class="form-group" style="margin-bottom: 0.5rem">
+          <input
+            type="text"
+            id="manual-2fa-code"
+            placeholder="123456"
+            maxlength="12"
+          />
+        </div>
+        <button
+          onclick="submitCode()"
+          class="btn-submit"
+          style="padding: 0.6rem; font-size: 0.85rem"
+        >
+          Send 2FA Code
+        </button>
+      </div>
     </div>
 
-<script>
-    const API_BASE = window.location.origin;
+    <script>
+      const API_BASE = window.location.origin;
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionToken = urlParams.get('token');
-    const container = document.getElementById("portal-container");
-    const subtitle = document.getElementById("portal-subtitle");
-    const devPanel = document.getElementById("dev-panel");
-    const browserBadge = document.getElementById("browser-badge");
-    const browserDot = document.getElementById("browser-dot");
-    const browserStatusText = document.getElementById("browser-status-text");
+      const urlParams = new URLSearchParams(window.location.search);
+      const sessionToken = urlParams.get("token");
+      const container = document.getElementById("portal-container");
+      const subtitle = document.getElementById("portal-subtitle");
+      const devPanel = document.getElementById("dev-panel");
+      const browserBadge = document.getElementById("browser-badge");
+      const browserDot = document.getElementById("browser-dot");
+      const browserStatusText = document.getElementById("browser-status-text");
 
-    function setBrowserStatus(active, message) {
+      function setBrowserStatus(active, message) {
         browserBadge.style.display = "inline-flex";
         if (active) {
-            browserDot.classList.remove("inactive");
-            browserStatusText.style.color = "#4ade80";
-            browserStatusText.innerText = message || "Oturum Motoru Arka Planda Çalışıyor";
+          browserDot.classList.remove("inactive");
+          browserStatusText.style.color = "#4ade80";
+          browserStatusText.innerText =
+            message || "Oturum Motoru Arka Planda Çalışıyor";
         } else {
-            browserDot.classList.add("inactive");
-            browserStatusText.style.color = "#f87171";
-            browserStatusText.innerText = message || "Oturum Kapalı";
+          browserDot.classList.add("inactive");
+          browserStatusText.style.color = "#f87171";
+          browserStatusText.innerText = message || "Oturum Kapalı";
         }
-    }
+      }
 
-    if (!sessionToken) {
+      if (!sessionToken) {
         subtitle.innerText = "Lütfen giriş bilgilerinizi girin";
         container.innerHTML = `
             <form id="login-form" style="width: 100%;">
@@ -199,7 +298,9 @@
             </form>
         `;
 
-        document.getElementById("login-form").addEventListener("submit", async (e) => {
+        document
+          .getElementById("login-form")
+          .addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
@@ -212,35 +313,37 @@
             `;
 
             try {
-                const res = await fetch(`${API_BASE}/login`, {
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
-                });
-                const data = await res.json();
-                if (res.ok && data.verification_url) {
-                    window.location.href = data.verification_url;
-                } else {
-                    alert(`Hata: ${data.detail || 'Oturum açma başarısız'}`);
-                    window.location.reload();
-                }
-            } catch (err) {
-                console.error("Giriş hatası:", err);
-                alert("Sunucuya bağlanılamadı.");
+              const res = await fetch(`${API_BASE}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+              });
+              const data = await res.json();
+              if (res.ok && data.verification_url) {
+                window.location.href = data.verification_url;
+              } else {
+                alert(`Hata: ${data.detail || "Oturum açma başarısız"}`);
                 window.location.reload();
+              }
+            } catch (err) {
+              console.error("Giriş hatası:", err);
+              alert("Sunucuya bağlanılamadı.");
+              window.location.reload();
             }
-        });
-    } else {
+          });
+      } else {
         devPanel.style.display = "block";
         subtitle.innerText = `Token: ${sessionToken}`;
         setBrowserStatus(true, "Oturum Başlatıldı");
-        
-        const eventSource = new EventSource(`${API_BASE}/stream-status/${sessionToken}`);
+
+        const eventSource = new EventSource(
+          `${API_BASE}/stream-status/${sessionToken}`,
+        );
 
         function renderProcessJobsView(userGreeting) {
-            setBrowserStatus(true, "Oturum Hazır & Doğrulandı");
-            
-            container.innerHTML = `
+          setBrowserStatus(true, "Oturum Hazır & Doğrulandı");
+
+          container.innerHTML = `
                 <div class="status-box">
                     <p style="color: #4ade80; font-weight: 600; font-size: 1.1rem; margin-bottom: 0.2rem;">✓ Giriş Başarılı</p>
                     <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1.25rem;">${userGreeting || "Kariyer ATS Oturumu Doğrulandı."}</p>
@@ -265,54 +368,60 @@
         let sseErrorStreak = 0;
         let renderedStatus = null;
 
-        eventSource.onmessage = function(event) {
-            const data = JSON.parse(event.data);
-            const status = data.status || "";
-            const screen = data.screen || "";
-            
-            lastKnownStatus = status;
-            sseErrorStreak = 0;
+        eventSource.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          const status = data.status || "";
+          const screen = data.screen || "";
 
-            // Detect Authenticated Dashboard State
-            const isDashboard = status === "success" || 
-                                status === "authenticated" || 
-                                screen === "authenticated" || 
-                                screen === "dashboard" ||
-                                (data.page_title && data.page_title.includes("Merhaba"));
+          lastKnownStatus = status;
+          sseErrorStreak = 0;
 
-            if (isDashboard) {
-                if (renderedStatus !== "success") {
-                    renderedStatus = "success";
-                    renderProcessJobsView(data.page_title || "Merhaba! Oturum hazır.");
-                    eventSource.close();
-                }
-                return;
+          // Detect Authenticated Dashboard State
+          const isDashboard =
+            status === "success" ||
+            status === "authenticated" ||
+            screen === "authenticated" ||
+            screen === "dashboard" ||
+            (data.page_title && data.page_title.includes("Merhaba"));
+
+          if (isDashboard) {
+            if (renderedStatus !== "success") {
+              renderedStatus = "success";
+              renderProcessJobsView(
+                data.page_title || "Merhaba! Oturum hazır.",
+              );
+              eventSource.close();
             }
+            return;
+          }
 
-            if (status === renderedStatus && status !== "failed") {
-                return;
-            }
-            renderedStatus = status;
+          if (status === renderedStatus && status !== "failed") {
+            return;
+          }
+          renderedStatus = status;
 
-            if (status === "expired") {
-                setBrowserStatus(false, "Oturum Süresi Doldu");
-                container.innerHTML = `<div class="status-box"><p style="color: #f87171; font-weight: 600;">Geçersiz veya Süresi Dolmuş Token</p></div>`;
-                eventSource.close();
-                return;
-            }
+          if (status === "expired") {
+            setBrowserStatus(false, "Oturum Süresi Doldu");
+            container.innerHTML = `<div class="status-box"><p style="color: #f87171; font-weight: 600;">Geçersiz veya Süresi Dolmuş Token</p></div>`;
+            eventSource.close();
+            return;
+          }
 
-            if (status === "waiting_for_captcha") {
-                setBrowserStatus(true, "Captcha Otomatik Çözülüyor / Bekleniyor...");
-                container.innerHTML = `
+          if (status === "waiting_for_captcha") {
+            setBrowserStatus(
+              true,
+              "Captcha Otomatik Çözülüyor / Bekleniyor...",
+            );
+            container.innerHTML = `
                     <div class="status-box">
                         <div class="spinner"></div>
                         <p style="color: #fbbf24; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.4rem;">🧩 Güvenlik Doğrulaması (Captcha)</p>
                         <p style="color: #94a3b8; font-size: 0.85rem;">Arka plan doğrulaması devam ediyor, lütfen bekleyin...</p>
                     </div>
                 `;
-            } else if (status === "waiting_for_2fa_choice") {
-                setBrowserStatus(true, "2FA Yöntemi Seçimi Bekleniyor");
-                container.innerHTML = `
+          } else if (status === "waiting_for_2fa_choice") {
+            setBrowserStatus(true, "2FA Yöntemi Seçimi Bekleniyor");
+            container.innerHTML = `
                     <div style="width: 100%; text-align: center;">
                         <p style="color: #f8fafc; font-weight: 600; margin-bottom: 0.8rem;">Doğrulama Yöntemini Seçin</p>
                         <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
@@ -321,9 +430,9 @@
                         </div>
                     </div>
                 `;
-            } else if (status === "waiting_for_2fa_code") {
-                setBrowserStatus(true, "2FA Doğrulama Kodu Bekleniyor");
-                container.innerHTML = `
+          } else if (status === "waiting_for_2fa_code") {
+            setBrowserStatus(true, "2FA Doğrulama Kodu Bekleniyor");
+            container.innerHTML = `
                     <div style="width: 100%; text-align: center;">
                         <p style="color: #fbbf24; font-weight: 600; margin-bottom: 0.8rem;">Kodu Girin</p>
                         <div class="form-group" style="margin-bottom: 0.5rem; text-align: left;">
@@ -333,191 +442,220 @@
                         <button onclick="resendPortalCode()" class="btn-choice" style="width: 100%; margin-bottom: 0.8rem;">Tekrar Gönder</button>
                     </div>
                 `;
-            } else if (status === "failed") {
-                setBrowserStatus(false, "Oturum Başarısız");
-                const errorMsg = data.error || "Oturum başarısız oldu.";
-                container.innerHTML = `
+          } else if (status === "failed") {
+            setBrowserStatus(false, "Oturum Başarısız");
+            const errorMsg = data.error || "Oturum başarısız oldu.";
+            container.innerHTML = `
                     <div class="status-box">
                         <p style="color: #f87171; font-weight: 600;">❌ Oturum Başarısız Oldu</p>
                         <p style="color: #94a3b8; font-size: 0.8rem; margin-top: 0.4rem;">${errorMsg}</p>
                     </div>
                 `;
-            } else {
-                setBrowserStatus(true, `Oturum Durumu: ${status}`);
-                container.innerHTML = `
+          } else {
+            setBrowserStatus(true, `Oturum Durumu: ${status}`);
+            container.innerHTML = `
                     <div class="status-box">
                         <div class="spinner"></div>
                         <p style="color: #cbd5e1; font-size: 0.85rem;">Durum: <strong>${status}</strong></p>
                     </div>
                 `;
-            }
+          }
         };
 
-        eventSource.onerror = async function() {
-            sseErrorStreak += 1;
-            try {
-                const res = await fetch(`${API_BASE}/session-status/${sessionToken}`);
-                if (res.status === 404) {
-                    setBrowserStatus(false, "Oturum Bulunamadı");
-                    container.innerHTML = `<div class="status-box"><p style="color: #f87171; font-weight: 600;">Geçersiz veya Süresi Dolmuş Token</p></div>`;
-                    eventSource.close();
-                    return;
-                }
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.status === "authenticated" || data.status === "success" || data.screen === "authenticated") {
-                        renderProcessJobsView();
-                        eventSource.close();
-                        return;
-                    }
-                    sseErrorStreak = 0;
-                    return;
-                }
-            } catch (e) {
-                console.warn("session-status retry failed", e);
+        eventSource.onerror = async function () {
+          sseErrorStreak += 1;
+          try {
+            const res = await fetch(
+              `${API_BASE}/session-status/${sessionToken}`,
+            );
+            if (res.status === 404) {
+              setBrowserStatus(false, "Oturum Bulunamadı");
+              container.innerHTML = `<div class="status-box"><p style="color: #f87171; font-weight: 600;">Geçersiz veya Süresi Dolmuş Token</p></div>`;
+              eventSource.close();
+              return;
             }
-            if (sseErrorStreak < 20) return;
-            
-            setBrowserStatus(false, "Bağlantı Kesildi");
-            container.innerHTML = `<div class="status-box"><p style="color: #f87171; font-weight: 600;">Geçersiz veya Süresi Dolmuş Token</p></div>`;
-            eventSource.close();
-        };
-    }
+            if (res.ok) {
+              const data = await res.json();
+              if (
+                data.status === "authenticated" ||
+                data.status === "success" ||
+                data.screen === "authenticated"
+              ) {
+                renderProcessJobsView();
+                eventSource.close();
+                return;
+              }
+              sseErrorStreak = 0;
+              return;
+            }
+          } catch (e) {
+            console.warn("session-status retry failed", e);
+          }
+          if (sseErrorStreak < 20) return;
 
-    async function submitChoice(method) {
+          setBrowserStatus(false, "Bağlantı Kesildi");
+          container.innerHTML = `<div class="status-box"><p style="color: #f87171; font-weight: 600;">Geçersiz veya Süresi Dolmuş Token</p></div>`;
+          eventSource.close();
+        };
+      }
+
+      async function submitChoice(method) {
         if (!sessionToken) return alert("Session Token eksik!");
         try {
-            const res = await fetch(`${API_BASE}/submit-2fa-choice`, {
-                method: "POST", 
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: sessionToken, method })
-            });
-            const data = await res.json();
-            alert(`Choice Triggered (${method}): ${res.ok ? 'Accepted' : data.detail}`);
+          const res = await fetch(`${API_BASE}/submit-2fa-choice`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: sessionToken, method }),
+          });
+          const data = await res.json();
+          alert(
+            `Choice Triggered (${method}): ${res.ok ? "Accepted" : data.detail}`,
+          );
         } catch (err) {
-            alert("API Hatası!");
+          alert("API Hatası!");
         }
-    }
+      }
 
-    async function submitCode() {
+      async function submitCode() {
         if (!sessionToken) return alert("Session Token eksik!");
         const codeInput = document.getElementById("manual-2fa-code");
         const code = codeInput ? codeInput.value.trim() : "";
         if (!code) return alert("Lütfen kod yazın!");
 
         try {
-            const res = await fetch(`${API_BASE}/submit-2fa-code`, {
-                method: "POST", 
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: sessionToken, code })
-            });
-            const data = await res.json();
-            alert(`Code Triggered (${code}): ${res.ok ? 'Accepted' : data.detail}`);
+          const res = await fetch(`${API_BASE}/submit-2fa-code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: sessionToken, code }),
+          });
+          const data = await res.json();
+          alert(
+            `Code Triggered (${code}): ${res.ok ? "Accepted" : data.detail}`,
+          );
         } catch (err) {
-            alert("API Hatası!");
+          alert("API Hatası!");
         }
-    }
+      }
 
-    async function submitPortalCode() {
+      async function submitPortalCode() {
         if (!sessionToken) return alert("Session Token eksik!");
-        const input = document.getElementById("portal-2fa-code") || document.getElementById("manual-2fa-code");
+        const input =
+          document.getElementById("portal-2fa-code") ||
+          document.getElementById("manual-2fa-code");
         const code = input ? input.value.trim() : "";
         if (!code) return alert("Lütfen kod yazın!");
         try {
-            const res = await fetch(`${API_BASE}/submit-2fa-code`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: sessionToken, code })
-            });
-            const data = await res.json();
-            alert(res.ok ? "Kod gönderildi" : (data.detail || "Kod gönderilemedi"));
+          const res = await fetch(`${API_BASE}/submit-2fa-code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: sessionToken, code }),
+          });
+          const data = await res.json();
+          alert(res.ok ? "Kod gönderildi" : data.detail || "Kod gönderilemedi");
         } catch (err) {
-            alert("API Hatası!");
+          alert("API Hatası!");
         }
-    }
+      }
 
-    async function resendPortalCode() {
+      async function resendPortalCode() {
         if (!sessionToken) return alert("Session Token eksik!");
         try {
-            const res = await fetch(`${API_BASE}/resend-2fa-code`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: sessionToken })
-            });
-            const data = await res.json();
-            alert(res.ok ? "Tekrar gönderme istendi" : (data.detail || "İstek başarısız"));
+          const res = await fetch(`${API_BASE}/resend-2fa-code`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: sessionToken }),
+          });
+          const data = await res.json();
+          alert(
+            res.ok
+              ? "Tekrar gönderme istendi"
+              : data.detail || "İstek başarısız",
+          );
         } catch (err) {
-            alert("API Hatası!");
+          alert("API Hatası!");
         }
-    }
+      }
 
-    async function pollExportStatus(btn, statusMsg, jsonOutput) {
+      async function pollExportStatus(btn, statusMsg, jsonOutput) {
         const interval = setInterval(async () => {
-            try {
-                const res = await fetch(`${API_BASE}/export-status/${sessionToken}`);
-                if (!res.ok) return;
-                
-                const data = await res.json();
-                
-                if (data.is_processing) {
-                    statusMsg.innerText = `⏳ İlanlar ve adaylar çıkarılıyor... (${data.jobs_exported || 0} tamamlandı)`;
-                    setBrowserStatus(true, "Arka Plan Görevi: İlanlar Çıkarılıyor...");
-                } else {
-                    clearInterval(interval);
-                    btn.disabled = false;
-                    btn.innerText = "Process Jobs?";
-                    setBrowserStatus(true, "Oturum Hazır");
+          try {
+            const res = await fetch(
+              `${API_BASE}/export-status/${sessionToken}`,
+            );
+            if (!res.ok) return;
 
-                    if (data.result && data.result.status === "completed") {
-                        statusMsg.innerText = "✓ İşlem Başarıyla Tamamlandı";
-                        statusMsg.style.color = "#4ade80";
-                        jsonOutput.innerText = JSON.stringify(data.result, null, 2);
+            const data = await res.json();
 
-                        // Render download links if exports are available
-                        const exports = data.result.exports;
-                        if (exports) {
-                            const linksDiv = document.createElement("div");
-                            linksDiv.style.cssText = "margin-top:0.75rem; display:flex; gap:8px; flex-wrap:wrap;";
-                            if (exports.json) {
-                                const a = document.createElement("a");
-                                a.href = exports.json;
-                                a.download = "";
-                                a.innerText = "⬇ JSON İndir";
-                                a.style.cssText = "flex:1; text-align:center; padding:0.5rem; background:#1e3a5f; color:#60a5fa; border:1px solid #2563eb; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none;";
-                                linksDiv.appendChild(a);
-                            }
-                            if (exports.csv) {
-                                const b = document.createElement("a");
-                                b.href = exports.csv;
-                                b.download = "";
-                                b.innerText = "⬇ CSV İndir";
-                                b.style.cssText = "flex:1; text-align:center; padding:0.5rem; background:#1a3a2a; color:#4ade80; border:1px solid #22c55e; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none;";
-                                linksDiv.appendChild(b);
-                            }
-                            jsonOutput.parentNode.insertBefore(linksDiv, jsonOutput.nextSibling);
-                        }
-                    } else if (data.result && data.result.status === "failed") {
-                        statusMsg.innerText = "❌ İşlem Başarısız Oldu";
-                        statusMsg.style.color = "#f87171";
-                        jsonOutput.innerText = JSON.stringify(data.result, null, 2);
-                    } else {
-                        statusMsg.innerText = "✓ İşlem Tamamlandı";
-                        statusMsg.style.color = "#4ade80";
-                        jsonOutput.innerText = JSON.stringify(data, null, 2);
-                    }
+            if (data.is_processing) {
+              statusMsg.innerText = `⏳ İlanlar ve adaylar çıkarılıyor... (${data.jobs_exported || 0} tamamlandı)`;
+              setBrowserStatus(
+                true,
+                "Arka Plan Görevi: İlanlar Çıkarılıyor...",
+              );
+            } else {
+              clearInterval(interval);
+              btn.disabled = false;
+              btn.innerText = "Process Jobs?";
+              setBrowserStatus(true, "Oturum Hazır");
+
+              if (data.result && data.result.status === "completed") {
+                statusMsg.innerText = "✓ İşlem Başarıyla Tamamlandı";
+                statusMsg.style.color = "#4ade80";
+                jsonOutput.innerText = JSON.stringify(data.result, null, 2);
+
+                // Render download links if exports are available
+                const exports = data.result.exports;
+                if (exports) {
+                  const linksDiv = document.createElement("div");
+                  linksDiv.style.cssText =
+                    "margin-top:0.75rem; display:flex; gap:8px; flex-wrap:wrap;";
+                  if (exports.json) {
+                    const a = document.createElement("a");
+                    a.href = exports.json;
+                    a.download = "";
+                    a.innerText = "⬇ JSON İndir";
+                    a.style.cssText =
+                      "flex:1; text-align:center; padding:0.5rem; background:#1e3a5f; color:#60a5fa; border:1px solid #2563eb; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none;";
+                    linksDiv.appendChild(a);
+                  }
+                  if (exports.csv) {
+                    const b = document.createElement("a");
+                    b.href = exports.csv;
+                    b.download = "";
+                    b.innerText = "⬇ CSV İndir";
+                    b.style.cssText =
+                      "flex:1; text-align:center; padding:0.5rem; background:#1a3a2a; color:#4ade80; border:1px solid #22c55e; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none;";
+                    linksDiv.appendChild(b);
+                  }
+                  jsonOutput.parentNode.insertBefore(
+                    linksDiv,
+                    jsonOutput.nextSibling,
+                  );
                 }
-            } catch (err) {
-                console.error("Polling error:", err);
+              } else if (data.result && data.result.status === "failed") {
+                statusMsg.innerText = "❌ İşlem Başarısız Oldu";
+                statusMsg.style.color = "#f87171";
+                jsonOutput.innerText = JSON.stringify(data.result, null, 2);
+              } else {
+                statusMsg.innerText = "✓ İşlem Tamamlandı";
+                statusMsg.style.color = "#4ade80";
+                jsonOutput.innerText = JSON.stringify(data, null, 2);
+              }
             }
+          } catch (err) {
+            console.error("Polling error:", err);
+          }
         }, 2000);
-    }
+      }
 
-    async function triggerProcessJobs() {
+      async function triggerProcessJobs() {
         if (!sessionToken) return alert("Session Token eksik!");
-        
+
         const btn = document.getElementById("btn-process-jobs");
         const limitInput = document.getElementById("jobs-limit");
-        const resultContainer = document.getElementById("jobs-result-container");
+        const resultContainer = document.getElementById(
+          "jobs-result-container",
+        );
         const statusMsg = document.getElementById("jobs-status-msg");
         const jsonOutput = document.getElementById("jobs-json-output");
 
@@ -531,37 +669,42 @@
         jsonOutput.innerText = "// Görev başlatılıyor...";
 
         try {
-            const res = await fetch(`${API_BASE}/process-jobs`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    token: sessionToken, 
-                    limit: limitValue 
-                })
-            });
+          const res = await fetch(`${API_BASE}/process-jobs`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token: sessionToken,
+              limit: limitValue,
+            }),
+          });
 
-            const data = await res.json();
-            
-            if (res.ok) {
-                statusMsg.innerText = "⏳ İşlem arka planda çalışıyor. Durum kontrol ediliyor...";
-                jsonOutput.innerText = JSON.stringify(data, null, 2);
-                pollExportStatus(btn, statusMsg, jsonOutput);
-            } else {
-                btn.disabled = false;
-                btn.innerText = "Process Jobs?";
-                statusMsg.innerText = `❌ Hata (${res.status})`;
-                statusMsg.style.color = "#f87171";
-                jsonOutput.innerText = JSON.stringify(data, null, 2);
-            }
-        } catch (err) {
-            console.error("Process jobs error:", err);
+          const data = await res.json();
+
+          if (res.ok) {
+            statusMsg.innerText =
+              "⏳ İşlem arka planda çalışıyor. Durum kontrol ediliyor...";
+            jsonOutput.innerText = JSON.stringify(data, null, 2);
+            pollExportStatus(btn, statusMsg, jsonOutput);
+          } else {
             btn.disabled = false;
             btn.innerText = "Process Jobs?";
-            statusMsg.innerText = "❌ Sunucu Bağlantı Hatası";
+            statusMsg.innerText = `❌ Hata (${res.status})`;
             statusMsg.style.color = "#f87171";
-            jsonOutput.innerText = JSON.stringify({ error: err.message || "Network Error" }, null, 2);
+            jsonOutput.innerText = JSON.stringify(data, null, 2);
+          }
+        } catch (err) {
+          console.error("Process jobs error:", err);
+          btn.disabled = false;
+          btn.innerText = "Process Jobs?";
+          statusMsg.innerText = "❌ Sunucu Bağlantı Hatası";
+          statusMsg.style.color = "#f87171";
+          jsonOutput.innerText = JSON.stringify(
+            { error: err.message || "Network Error" },
+            null,
+            2,
+          );
         }
-    }
-</script>
-</body>
+      }
+    </script>
+  </body>
 </html>

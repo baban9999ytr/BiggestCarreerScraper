@@ -68,9 +68,9 @@ Users retain control over whether this software transmits data externally:
 1. Open or create the local `logging_optout.txt` file in the project directory.
 2. Set the only active setting to:
 
-	```text
-	LET_LOG=FALSE
-	```
+   ```text
+   LET_LOG=FALSE
+   ```
 
 3. Run the ingestion process again. It will issue a warning and stop before Supabase upload or telemetry enrichment.
 

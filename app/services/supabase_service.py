@@ -102,7 +102,9 @@ def save_processed_files(processed_set: Set[str]) -> None:
         logger.error("Failed to save tracker file: %s", e)
 
 
-def filter_and_enrich_data(raw_data: Dict[str, Any], machine_name: str) -> Dict[str, Any]:
+def filter_and_enrich_data(
+    raw_data: Dict[str, Any], machine_name: str
+) -> Dict[str, Any]:
     filtered = {k: v for k, v in raw_data.items() if k in TARGET_KEYS}
     filtered["executed_by"] = machine_name
     filtered["is_logged"] = True

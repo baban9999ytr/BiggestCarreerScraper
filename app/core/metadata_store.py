@@ -17,8 +17,7 @@ class MetadataStore:
 
     async def init_db(self):
         async with aiosqlite.connect(self.db_path) as db:
-            await db.execute(
-                """
+            await db.execute("""
                 CREATE TABLE IF NOT EXISTS sessions (
                     token TEXT PRIMARY KEY,
                     email TEXT,
@@ -27,10 +26,8 @@ class MetadataStore:
                     expires_at TEXT,
                     metadata JSON
                 )
-                """
-            )
-            await db.execute(
-                """
+                """)
+            await db.execute("""
                 CREATE TABLE IF NOT EXISTS jobs (
                     job_id TEXT PRIMARY KEY,
                     token TEXT,
@@ -39,18 +36,23 @@ class MetadataStore:
                     updated_at TEXT,
                     result JSON
                 )
-                """
-            )
+                """)
             await db.commit()
 
     async def save_session(self, token: str, session_data: dict):
         email = session_data.get("email", "")
         status = session_data.get("status", "initiating")
-        created_at = session_data.get("created_at") or datetime.now(timezone.utc).isoformat()
-        expires_at = session_data.get("expires_at") or datetime.now(timezone.utc).isoformat()
+        created_at = (
+            session_data.get("created_at") or datetime.now(timezone.utc).isoformat()
+        )
+        expires_at = (
+            session_data.get("expires_at") or datetime.now(timezone.utc).isoformat()
+        )
 
         meta = {
-            k: v for k, v in session_data.items() if k not in ("page", "lock", "browser", "context")
+            k: v
+            for k, v in session_data.items()
+            if k not in ("page", "lock", "browser", "context")
         }
 
         async with aiosqlite.connect(self.db_path) as db:

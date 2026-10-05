@@ -21,7 +21,9 @@ else:
 
 _TOKEN_REGEX = re.compile(r"([a-fA-F0-9]{32})")
 _EMAIL_REGEX = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
-_VERSION_FALLBACK_REGEX = re.compile(r'^\s*version\s*=\s*["\']([^"\']+)["\']', re.MULTILINE)
+_VERSION_FALLBACK_REGEX = re.compile(
+    r'^\s*version\s*=\s*["\']([^"\']+)["\']', re.MULTILINE
+)
 
 
 class SecretRedactingFormatter(Formatter):
@@ -38,11 +40,15 @@ def setup_logging() -> None:
         root_logger.removeHandler(handler)
 
     handler = logging.StreamHandler()
-    formatter = SecretRedactingFormatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s")
+    formatter = SecretRedactingFormatter(
+        "%(asctime)s [%(levelname)s] [%(name)s] %(message)s"
+    )
     handler.setFormatter(formatter)
 
     root_logger.addHandler(handler)
-    root_logger.setLevel(logging.INFO if settings.app_env != "development" else logging.DEBUG)
+    root_logger.setLevel(
+        logging.INFO if settings.app_env != "development" else logging.DEBUG
+    )
 
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("asyncio").setLevel(logging.WARNING)
@@ -121,14 +127,17 @@ def _log_auth_warning(reason: str) -> None:
         f"  {reason}\n"
         "  Skipping automatic version verification.\n"
         "  [!] YOU ARE AT RISK OF RUNNING WITH AN OUTDATED / MISMATCHED VERSION.\n"
-        "  Please configure Git/GitHub CLI credentials or set GITHUB_TOKEN.\n" + "!" * 70
+        "  Please configure Git/GitHub CLI credentials or set GITHUB_TOKEN.\n"
+        + "!" * 70
     )
 
 
 def check_for_updates() -> None:
     local_version_str = get_local_version()
     if not local_version_str:
-        logger.debug("Could not determine local pyproject.toml version. Skipping update check.")
+        logger.debug(
+            "Could not determine local pyproject.toml version. Skipping update check."
+        )
         return
 
     api_url = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/contents/pyproject.toml?ref={BRANCH}"
@@ -150,13 +159,19 @@ def check_for_updates() -> None:
             )
             return
         elif response.status_code == 404:
-            logger.warning("Remote pyproject.toml not found or repository access is restricted.")
+            logger.warning(
+                "Remote pyproject.toml not found or repository access is restricted."
+            )
             return
         elif response.status_code != 200:
-            logger.debug(f"GitHub version check failed with status {response.status_code}")
+            logger.debug(
+                f"GitHub version check failed with status {response.status_code}"
+            )
             return
 
-        content_b64 = response.json().get("content", "").replace("\n", "").replace("\r", "")
+        content_b64 = (
+            response.json().get("content", "").replace("\n", "").replace("\r", "")
+        )
         remote_file_content = base64.b64decode(content_b64).decode("utf-8")
 
         remote_version_str = parse_toml_version(remote_file_content)
@@ -165,7 +180,9 @@ def check_for_updates() -> None:
             return
 
         try:
-            is_outdated = parse_version(remote_version_str) > parse_version(local_version_str)
+            is_outdated = parse_version(remote_version_str) > parse_version(
+                local_version_str
+            )
         except Exception:
             is_outdated = remote_version_str != local_version_str
 
@@ -175,7 +192,8 @@ def check_for_updates() -> None:
                 "  [!] UPDATE AVAILABLE\n"
                 f"  Your local version (v{local_version_str}) is outdated.\n"
                 f"  Latest upstream version on '{GITHUB_OWNER}/{GITHUB_REPO}' is (v{remote_version_str}).\n"
-                "  Please pull the latest changes or re-download the source.\n" + "=" * 70
+                "  Please pull the latest changes or re-download the source.\n"
+                + "=" * 70
             )
         else:
             logger.info(f"App is up to date (v{local_version_str}).")
