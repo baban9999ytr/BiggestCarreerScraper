@@ -39,7 +39,7 @@
         "pycryptodome~=3.21.0",
         "aiohttp>=3.9.0",
         "sentry-sdk[fastapi,flask]>=2.0.0",
-        "opencv-python~=4.10.0.84",
+        "opencv-python>=4.10.0.84,<5.0.1.0",
         "numpy~=2.2.1",
         "ddddocr @ git+https://github.com/sml2h3/ddddocr.git@main#egg=ddddocr",
     ]
