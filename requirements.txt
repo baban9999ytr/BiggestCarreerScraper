@@ -18,6 +18,6 @@ flask>=3.0.0
 sentry-sdk[fastapi]>=2.0.0
 
 # Image Processing & OCR (GeeTest Solvers)
-opencv-python~=4.10.0.84
+opencv-python>=4.10.0.84,<5.0.1.0
 numpy~=2.2.1
 ddddocr @ git+https://github.com/sml2h3/ddddocr.git@main#egg=ddddocr
