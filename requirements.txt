@@ -12,7 +12,7 @@ playwright>=1.42.0
 # HTTP & Security Tools
 requests~=2.32.3
 curl_cffi~=0.10.0
-pycryptodome~=3.21.0
+pycryptodome>=3.21,<3.24
 aiohttp>=3.9.0
 flask>=3.0.0
 sentry-sdk[fastapi]>=2.0.0
